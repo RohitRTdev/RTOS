@@ -10,7 +10,7 @@ The OS is at a very early stage and only sports basic services. RTOS follows the
 * Extremely basic graphics( without graphics card and lot of work to set up)
 * A physical memory manager
 
-##Build
+## Build
 
 * To build the OS, simply clone the directory and execute 
 >>make RTOS
@@ -23,7 +23,7 @@ EFI & RT_core.rm must be at the top of the hierarchy.
 EFI--> BOOT --> BOOTX64.EFI  
 RT_core.rm  
 
-##Testing 
+## Testing 
 Testing can be done by burning the image file to a flash drive and running it on real machine by choosing to boot through the flash drive in BIOS setup.
 Make sure that you have disabled secure boot in the BIOS setup or the OS won't load.
 
