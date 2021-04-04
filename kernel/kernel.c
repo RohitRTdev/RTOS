@@ -18,7 +18,7 @@ static void kernel_main(boot_info *boot)
         while(1){}
     }
     //Note that UEFI already sets up double extended precision SSE for the system   
-    //Errors that happen during initialisation of core modules cannot be resolved and will make system unresposive 
+    //Errors that happen during initialisation of core modules cannot be resolved and will make system unresponsive 
 
     //Set up kernel modules
     err_status = CPU_init();
