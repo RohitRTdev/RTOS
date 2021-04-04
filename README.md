@@ -2,7 +2,7 @@
 RTOS is X64 based OS that is UEFI compliant.
 
 ## Description
-The OS is at a very early stage and only sports basic services. RTOS follows the windows philosophy of "everything is an object".
+The OS is at a very early stage and only sports basic services. RTOS follows the windows philosophy of **everything is an object**.
 
 **Services**
 * UEFI bootloader
