@@ -17,5 +17,6 @@ SYS_ERROR relocate_main_block(Super_Mem_desc *desc);
 void init_free_blocks(Free_Mem_desc *mem, Super_Mem_desc *desc);
 void phy_defrag(Super_Mem_desc *desc, Free_Mem_desc *block_address);
 void set_allocation_algorithm(boolean allocation_algorithm);
+void setup_AllocPool(AllocPoolHeader *block_ptr, uint64_t resc_size, boolean type, AllocPoolHeader *main_node);
 
 #endif

@@ -1,6 +1,6 @@
 #include <mm/phyMemtools.h>
 #include <logging/basic_print.h>
-#include <rmemory.h>
+#include <rclib.h>
 
 static uint64_t n_desc;
 
@@ -276,6 +276,41 @@ void init_free_blocks(Free_Mem_desc *mem, Super_Mem_desc *desc)
     while(i < desc->maxdescriptors)
     {
         mem[i++].pages = 0;
+    }
+
+}
+
+void setup_AllocPool(AllocPoolHeader *block_ptr, uint64_t resc_size, boolean type, AllocPoolHeader *prev_node)
+{
+    block_ptr->sign = ALLC;
+    block_ptr->max_resources = DEFAULT_MAX_RESOURCES;
+    block_ptr->no_of_resources = 1;
+    block_ptr->type = type;
+    block_ptr->resc_size = resc_size;
+    block_ptr->list_mem.This = block_ptr;
+    if(type == SUB_NODE)
+    {
+        add_list_node(&prev_node->list_mem, &block_ptr->list_mem);
+    }
+    else
+    {
+        block_ptr->list_mem.next = NULL;
+        block_ptr->list_mem.prev = NULL;
+    }
+    
+
+    uint64_t resc_normalised = resc_size / 4;
+
+    uint32_t *resc_ptr = (uint32_t*)((uint8_t*)block_ptr + SIZE_OF_ALLOC_HEADER);
+    *resc_ptr = FLAG;
+    resc_ptr += resc_normalised;
+
+    uint64_t resc_count = 1;
+    while(resc_count < block_ptr->max_resources)
+    {
+        *resc_ptr = REMD;
+        resc_ptr += resc_normalised;
+        resc_count++;
     }
 
 }

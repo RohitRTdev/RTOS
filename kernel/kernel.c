@@ -4,6 +4,14 @@
 #include <mm/mm.h>
 #include <utils.h>
 
+
+typedef struct{
+    uint64_t module_id;
+    uint64_t module_string;
+    uint64_t module_entry;
+    uint64_t module_interface;
+}new_resc;
+
 static void kernel_main(boot_info *boot)
 {
     _cli();   //Disable all interrupts
@@ -27,8 +35,9 @@ static void kernel_main(boot_info *boot)
     err_status = mm_init(boot->Map);
     RT_ERROR_REPORT("Failed to initialise Memory Manager", err_status); 
 
-    err_status = module_init();
-    
+    basic_print("Loaded RTOS 1.0 ...\r\n");
+    basic_print("Oops... RTOS seems to be in maintenance... Please wait until official RTOS 1.0 is released.\r\n");
+    basic_print("To exit just click the shutdown button.\r\n");
 
     while(1){}
 }

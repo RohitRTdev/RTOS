@@ -6,7 +6,7 @@ CFLAGS = -ffreestanding  -mno-red-zone -fPIC -Wall -Wno-varargs  $(INCLUDE) -c
 LDFLAGS =  -nostdlib -T $(LDSCRIPTS) --image-base=0 --gc-sections -shared --subsystem 0 -e kernel_entry -o
 LIB = ../lib/rclib/librc.a
 DIR := $(filter-out $(wildcard *.*) include ,$(wildcard *))
-SRC := $(wildcard $(foreach dir,$(DIR),$(dir)/*[.c|.s]) *[.c|.s]  ../utils/*[.c|.s])
+SRC := $(wildcard $(foreach dir,$(DIR),$(dir)/*[.c|.s]) *.c *.s ../utils/*.c ../utils/*.s)
 OBJS := $(addsuffix .o,$(foreach path, $(basename $(SRC)),$(lastword $(subst /, ,$(path)))))
 TARGET = RTcore.rm 
 mount = EFI/BOOT
