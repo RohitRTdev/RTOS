@@ -26,7 +26,7 @@ static void kernel_main(boot_info *boot)
         while(1){}
     }
     //Note that UEFI already sets up double extended precision SSE for the system   
-    //Errors that happen during initialisation of core modules cannot be resolved and will make system unresposive 
+    //Errors that happen during initialisation of core modules cannot be resolved and will make system unresponsive 
 
     //Set up kernel modules
     err_status = CPU_init();
@@ -38,6 +38,8 @@ static void kernel_main(boot_info *boot)
     basic_print("Loaded RTOS 1.0 ...\r\n");
     basic_print("Oops... RTOS seems to be in maintenance... Please wait until official RTOS 1.0 is released.\r\n");
     basic_print("To exit just click the shutdown button.\r\n");
+
+
 
     while(1){}
 }

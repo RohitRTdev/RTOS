@@ -1,5 +1,5 @@
 CC = x86_64-w64-mingw32-gcc
-CFLAGS = -mno-red-zone -Wno-varargs -I../../../boot/include/ -c  
+CFLAGS = -mno-red-zone -Wno-varargs -I../../boot/include/ -c  
 SRC = $(wildcard *.c)
 OBJ = *.o
 
