@@ -1,1 +1,8 @@
 resources/*
+.vscode
+kernel/*.rm
+lib/*/*.a
+boot/BOOTX64.EFI
+*.o
+*/*.o
+*/*/*.o
