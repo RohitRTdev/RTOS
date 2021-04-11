@@ -33,7 +33,6 @@ static void kernel_main(boot_info *boot)
     basic_print("To exit just click the shutdown button.\r\n");
 
 
-
     while(1){}
 }
 

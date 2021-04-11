@@ -4,7 +4,6 @@
 #include <logging/basic_print.h>
 
 static Super_Mem_desc global_desc;
-static uint64_t iter;
 
 SYS_ERROR phyMem_init(Map_descriptor *MemMap)
 {
@@ -41,7 +40,6 @@ SYS_ERROR phyMem_init(Map_descriptor *MemMap)
     */
 
     global_desc.allocation_algorithm = FIRST_FIT;
-    iter = 1;
 
     return err_code;
 }
