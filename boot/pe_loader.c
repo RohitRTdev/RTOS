@@ -6,16 +6,16 @@
 #include <pe.h>
 #include <primary_loader.h>
 
-static void pe_load_section(EFI_FILE_PROTOCOL *kernel_buf, UINT64 size, Section_header section, UINT8 *load_address)
+static void pe_load_section(EFI_FILE_PROTOCOL *file_buf, UINT64 size, Section_header section, UINT8 *load_address)
 {
 
-    kernel_buf->SetPosition(kernel_buf, section.PointerToRawData);
+    file_buf->SetPosition(file_buf, section.PointerToRawData);
 
-    kernel_buf->Read(kernel_buf, &size, (void*)load_address);
+    file_buf->Read(file_buf, &size, (void*)load_address);
 
 }
 
-static void pe_relocate(EFI_FILE_PROTOCOL *kernel_buf, Section_header section, UINT64 delta, Opt_COFF_header hdr, UINT8* base_address)
+static void pe_relocate(EFI_FILE_PROTOCOL *file_buf, Section_header section, UINT64 delta, Opt_COFF_header hdr, UINT8* base_address)
 {
     UINTN size = round_4k(section.SizeOfRawData)*PAGESIZE;
     UINT64 im_offset;
@@ -31,14 +31,14 @@ static void pe_relocate(EFI_FILE_PROTOCOL *kernel_buf, Section_header section, U
     
     EFI_STATUS status;
            
-    kernel_buf->SetPosition(kernel_buf, section.PointerToRawData);
+    file_buf->SetPosition(file_buf, section.PointerToRawData);
 
     status = BS->AllocatePool(EfiLoaderData, size, (void**)&cache);
     EFI_FATAL_REPORT(L"Could not allocate memory for reloc section!\r\n", status);
 
     buf = cache;
     block_hdr_read = (UINT32*)cache;
-    kernel_buf->Read(kernel_buf, &size, (void*)cache);
+    file_buf->Read(file_buf, &size, (void*)cache);
 
     p_rva = *block_hdr_read;
     reloc_size = *(block_hdr_read + 1);  
@@ -74,33 +74,33 @@ UINT64 round_4k(UINT64 value)
     UINT64 pages = (value % PAGESIZE)?value/PAGESIZE + 1: value/PAGESIZE;
     return pages;
 }
-static BOOLEAN pe_verify(EFI_FILE_PROTOCOL *kernel_buf)
+static BOOLEAN pe_verify(EFI_FILE_PROTOCOL *file_buf)
 {
     UINT16 mz;
     UINT32 pe;
     UINT8 offset;
     UINTN buf_size = 2;
-    kernel_buf->Read(kernel_buf, &buf_size, (void*)&mz);
+    file_buf->Read(file_buf, &buf_size, (void*)&mz);
 
     //Basic PE file verification
 
     if(mz != dos_signature)
         return FALSE;
     
-    kernel_buf->SetPosition(kernel_buf, signature_offset);
+    file_buf->SetPosition(file_buf, signature_offset);
 
     buf_size = 1;
-    kernel_buf->Read(kernel_buf, &buf_size, (void*)&offset);
-    kernel_buf->SetPosition(kernel_buf, offset);
+    file_buf->Read(file_buf, &buf_size, (void*)&offset);
+    file_buf->SetPosition(file_buf, offset);
     buf_size = 4;
-    kernel_buf->Read(kernel_buf, &buf_size, (void*)&pe);
+    file_buf->Read(file_buf, &buf_size, (void*)&pe);
     if(pe != pe_signature)
         return FALSE;
 
     return TRUE;
 }
 
-static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
+static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
 {
     EFI_STATUS status;
     BOOLEAN load_verify = FALSE;
@@ -114,11 +114,11 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
     UINT64 sect_counter = 0;
     BOOLEAN text_sect = FALSE;
 
-    load_verify = pe_verify(kernel_buf);
+    load_verify = pe_verify(file_buf);
     if(!load_verify)
        return NULL; 
     
-    kernel_buf->Read(kernel_buf, &buf_size, (void*)&pe_hdr);
+    file_buf->Read(file_buf, &buf_size, (void*)&pe_hdr);
     if(pe_hdr.machine != IMAGE_FILE_MACHINE_AMD64)
     {
         printEFI(L"Machine Type is not x86_64\r\n");
@@ -128,7 +128,7 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
     buf_size = pe_hdr.SizeOfOptionalHeader;
 
     //Read optional header
-    kernel_buf->Read(kernel_buf, &buf_size, (void*)&pe_opt_hdr);
+    file_buf->Read(file_buf, &buf_size, (void*)&pe_opt_hdr);
         
     UINT64 size_code = round_4k(pe_opt_hdr.SizeOfCode);
     UINT64 size_data = round_4k(pe_opt_hdr.SizeOfInitializedData);
@@ -136,7 +136,7 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
     UINT64 pos; 
     pages = size_code + size_data + size_bss;
 
-    //Allocate suitable amount of pages to load kernel
+    //Allocate suitable amount of pages to load requested file
     status = BS->AllocatePool(EfiLoaderData, pages * PAGESIZE, (void**)&load_address);
     EFI_FATAL_REPORT(L"Memory is insufficient to load kernel", status);
 
@@ -148,18 +148,18 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
     while(sect_counter < pe_hdr.NumberOfSections)
     {
         //Read the section header
-        kernel_buf->Read(kernel_buf, &buf_size, (void*)&section);
-        kernel_buf->GetPosition(kernel_buf, &pos);
+        file_buf->Read(file_buf, &buf_size, (void*)&section);
+        file_buf->GetPosition(file_buf, &pos);
         //Parse the section header
         if(!rstrcmp(section.name, ".text"))
         {
             text_sect = TRUE;
-            pe_load_section(kernel_buf, pe_opt_hdr.SizeOfCode, section, cur_address);
+            pe_load_section(file_buf, pe_opt_hdr.SizeOfCode, section, cur_address);
             cur_address = cur_address + size_code*PAGESIZE;
         }
         else if(!rstrcmp(section.name, ".data"))
         {
-            pe_load_section(kernel_buf, pe_opt_hdr.SizeOfInitializedData, section, cur_address);
+            pe_load_section(file_buf, pe_opt_hdr.SizeOfInitializedData, section, cur_address);
             cur_address = cur_address + size_data*PAGESIZE;
         } 
         else if(!rstrcmp(section.name, ".bss"))
@@ -171,10 +171,10 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *kernel_buf, Image_data *image)
         {
             //Apply DIR64 type relocation 
             //Relocation is necessary even with PIC as global pointers may have fixed addresses which we need to change
-            pe_relocate(kernel_buf, section, delta, pe_opt_hdr, load_address);
+            pe_relocate(file_buf, section, delta, pe_opt_hdr, load_address);
         }  
         sect_counter++;
-        kernel_buf->SetPosition(kernel_buf, pos);
+        file_buf->SetPosition(file_buf, pos);
 
     }
 
@@ -198,7 +198,7 @@ EFI_FILE_PROTOCOL* openfile(EFI_HANDLE deviceHandle, CHAR16 *filepath)
     EFI_GUID simple_fs_guid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
     EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *simple_fs = NULL;
     EFI_FILE_PROTOCOL *root = NULL;
-    EFI_FILE_PROTOCOL *kernel_handle = NULL;
+    EFI_FILE_PROTOCOL *file_handle = NULL;
 
     //Get simple filesystem protocol for the device handle
     status = BS->HandleProtocol(deviceHandle, &simple_fs_guid, (void**)&simple_fs);
@@ -206,13 +206,19 @@ EFI_FILE_PROTOCOL* openfile(EFI_HANDLE deviceHandle, CHAR16 *filepath)
 
     //Access root directory of device of file I/O
     status = simple_fs->OpenVolume(simple_fs, (EFI_FILE_PROTOCOL**)&root);
-    EFI_FATAL_REPORT(L"Could not open root directory\r\n", status);
+    EFI_FATAL_REPORT(L"Could not open root directory", status);
 
-    //Open the kernel file 
-    status = root->Open(root, (EFI_FILE_PROTOCOL**)&kernel_handle, filepath, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
-    EFI_FATAL_REPORT(L"Could not load kernel", status);
+    //Open the requested file 
+    status = root->Open(root, (EFI_FILE_PROTOCOL**)&file_handle, filepath, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
+    if(EFI_ERROR(status))
+    {
+        printEFI(L"Fatal error!\r\n");
+        printEFI(L"Could not load requested file at path %s\r\n", filepath);
+        printEFI(L"Cannot continue execution!\r\n");
+        while(1){}
+    }
 
-    return kernel_handle;
+    return file_handle;
 
 }
 

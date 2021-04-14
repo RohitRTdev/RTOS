@@ -1,8 +1,6 @@
-resources/*
+resources
 .vscode
-kernel/*.rm
-lib/*/*.a
-boot/BOOTx64.EFI
+*.rm
+*.a
+*.EFI
 *.o
-*/*.o
-*/*/*.o

@@ -1,5 +1,4 @@
 #include <mm/phyMemtools.h>
-#include <logging/basic_print.h>
 #include <rclib.h>
 
 static uint64_t n_desc;
