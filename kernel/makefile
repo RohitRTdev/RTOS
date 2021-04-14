@@ -17,6 +17,7 @@ BIOS= ../resources/OVMF.fd
 FONT = ../resources/*.psf
 var := $(shell sudo losetup -f)
 
+
 $(TARGET): $(SRC) $(LIB)
 	$(CC) $(CFLAGS) $(SRC)
 	$(LD) $(LDFLAGS) $@ $(OBJS) $(LIB)

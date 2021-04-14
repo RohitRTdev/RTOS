@@ -27,7 +27,7 @@ static SYS_ERROR set_up_gdt()
     size_t gdt_allocation_size = GDT_DEFAULT_SIZE;
     segment_descriptor *gdt_ptr = NULL; //GDT is aligned to 8 bytes by default
 
-    SYS_ERROR gdt_alloc_error = AllocMem(&gdt_allocation_size, (void**)&gdt_ptr);
+    SYS_ERROR gdt_alloc_error = AllocMem(&gdt_allocation_size, (void**)&gdt_ptr, DEFAULT_ALIGNMENT);
     RT_INFO(gdt_alloc_error)
 
     //NULL descriptor

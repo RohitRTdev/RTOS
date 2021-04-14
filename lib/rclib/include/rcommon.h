@@ -5,6 +5,7 @@
 
 uint64_t ralign(uint64_t value, uint64_t boundary);
 uint64_t ralign_op(uint64_t val, uint64_t alignment);
+boolean alignmentcheck(size_t alignment);
 
 
 #endif

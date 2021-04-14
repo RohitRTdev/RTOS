@@ -9,6 +9,7 @@ OPERATE_LIB_EFI = cd $(LIB_DIR_EFI) && $(MAKE)
 
 all: RTOS img test
 
+
 RTOS:
 	$(OPERATE_LIB_RC) 
 	$(OPERATE_LIB_EFI) 

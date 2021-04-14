@@ -4,11 +4,12 @@
 #include <rclib.h>
 #include <kernel.h>
 
+#pragma pack(1)
+
 #define SIGNATURE 0x45455246 //"FREE"(In little endian)
 #define ALLC 0x434c4c41 
 #define REMD 0x444d4552
 #define FLAG 0x47414c46
-
 
 #define FREE 1
 #define NOT_FREE 0
@@ -33,6 +34,8 @@ struct _Free_block{
     uint8_t state;          //free/not
     uint64_t total_size;
     uint64_t size_used; 
+    size_t alignment;
+    void *reserved;
 };
 
 struct _Free_Mem_desc{           

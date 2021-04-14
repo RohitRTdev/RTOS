@@ -1,9 +1,10 @@
+#include <mm/mm.h>
 #include <mm/phyMem.h>
 #include <mm/phyMemtools.h>
 #include <rclib.h>
-#include <logging/basic_print.h>
 
 static Super_Mem_desc global_desc;
+static boolean destroy_data;
 
 SYS_ERROR phyMem_init(Map_descriptor *MemMap)
 {
@@ -40,37 +41,76 @@ SYS_ERROR phyMem_init(Map_descriptor *MemMap)
     */
 
     global_desc.allocation_algorithm = FIRST_FIT;
+    destroy_data = false;
 
     return err_code;
 }
 
-SYS_ERROR AllocMem(size_t *size_ptr, void **buffer)
+SYS_ERROR AllocMem(size_t *size_ptr, void **buffer, size_t alignment)
 {
     SYS_ERROR err_code = NO_ERROR;
     size_t size = *size_ptr;
+    size_t size_aligned = size;
+    boolean aligned = alignmentcheck(alignment) && (alignment <= PAGESIZE);
 
-    if(size == 0)
+    if(size == 0 || !aligned)
         return INVALID_PARAMETERS;
     
     if(size > global_desc.free_space)
         return PHY_INSUFFICIENT_MEM;
 
-    size += SIZE_OF_ALLOCATED_BLOCK;  //Include the size of the free block header we're using
+    size_t alloc_header = (alignment >= DEFAULT_ALIGNMENT)?ralign_op(SIZE_OF_ALLOCATED_BLOCK, alignment):SIZE_OF_ALLOCATED_BLOCK;    
+
+    size += SIZE_OF_ALLOCATED_BLOCK; //Includes the size of the free block header we're using
+    size_aligned += alloc_header;    //Includes the size of the aligned free block header
+
 
     size_t size_rounded = ralign_op(size, PAGESIZE); //Size aligned to a page in bytes
+    size_t size_rounded_aligned = ralign_op(size_aligned, PAGESIZE);
+
     Free_Mem_desc *free_block_desc = NULL;
     Free_block *free_block = NULL;
 
-    err_code = smallest_fit(&size_rounded, &global_desc, (void**)&free_block_desc);
-    if(err_code != NOT_REQUESTED_SIZE)    
+    boolean alignment_success = false;
+    
+    if(alloc_header != SIZE_OF_ALLOCATED_BLOCK)
     {
-        RT_INFO(err_code)
-    }        
+        err_code = smallest_fit(&size_rounded_aligned, &global_desc, (void**)&free_block_desc);
+        if(RT_ERROR(err_code))
+        {
+            err_code = smallest_fit(&size_rounded, &global_desc, (void**)&free_block_desc);
+            if(err_code != NOT_REQUESTED_SIZE)    
+            {
+                RT_INFO(err_code)
+            }        
+            else
+            {
+                *size_ptr = size_rounded - SIZE_OF_ALLOCATED_BLOCK; //This indicates the amount of space we were able to afford
+                size = size_rounded;
+            }    
+        }
+        else
+        {
+            size_rounded = size_rounded_aligned;
+            size = size_aligned;
+        }
+        alignment_success = true;
+    }
     else
     {
-        *size_ptr = size_rounded - SIZE_OF_ALLOCATED_BLOCK; //This indicates the amount of space we were able to afford
-        size = size_rounded;
-    }    
+        err_code = smallest_fit(&size_rounded, &global_desc, (void**)&free_block_desc);
+        if(err_code != NOT_REQUESTED_SIZE)    
+        {
+            RT_INFO(err_code)
+        }        
+        else
+        {
+            *size_ptr = size_rounded - SIZE_OF_ALLOCATED_BLOCK; //This indicates the amount of space we were able to afford
+            size = size_rounded;
+        }    
+    }
+   
+   
 
     //Update the free block descriptor and get free block address
     free_block_desc->pages -= size_rounded / PAGESIZE;
@@ -81,15 +121,21 @@ SYS_ERROR AllocMem(size_t *size_ptr, void **buffer)
 
     //Set up free block header
     free_block->signature = SIGNATURE;
-    free_block->size_used = size - SIZE_OF_ALLOCATED_BLOCK;
+    free_block->size_used = size - alloc_header;
     free_block->total_size = size_rounded;
     free_block->state = NOT_FREE;
+
+    if(alignment_success)
+        free_block->alignment = alignment;
+    else
+        free_block->alignment = DEFAULT_ALIGNMENT;
 
     global_desc.no_of_alloc_desc++;
     
     global_desc.free_space -= size_rounded;
 
-    *buffer = (void*)((uint64_t)free_block + SIZE_OF_ALLOCATED_BLOCK);
+    *buffer = (void*)((uint64_t)free_block + alloc_header);
+    *(size_t*)((uint8_t*)buffer - 8) = (size_t)free_block;
     
     return err_code;
 }
@@ -98,7 +144,8 @@ SYS_ERROR FreeMem(void *buffer)
 {
     SYS_ERROR err_code = NO_ERROR;
 
-    Free_block *free_block = (Free_block*)((uint64_t)buffer - SIZE_OF_ALLOCATED_BLOCK);
+    Free_block *free_block = (Free_block*)*(size_t*)((uint8_t*)buffer - 8); 
+
     if(free_block->signature != SIGNATURE || free_block->state == FREE)
     {
         return INVALID_PARAMETERS;
@@ -110,10 +157,15 @@ SYS_ERROR FreeMem(void *buffer)
     //Free the free_block_header
  
     free_block->state = FREE;
-    free_block->size_used = 0;
     block_address = (size_t)free_block;
     pages = free_block->total_size / PAGESIZE; 
-    free_block->total_size = 0;
+
+    if(destroy_data)
+    {
+        free_block->size_used = 0;
+        free_block->total_size = 0;
+    }
+        
     global_desc.no_of_alloc_desc--;
 
     defrag_at_free(block_address, pages, &global_desc);
@@ -132,22 +184,39 @@ SYS_ERROR FreeMem(void *buffer)
 }
 
 
-SYS_ERROR ReAllocMem(size_t* size, void **buffer)
+SYS_ERROR ReAllocMem(size_t* size, void **buffer, size_t alignment)
 {
     SYS_ERROR error_code = NO_ERROR;
+
+    destroy_data = false;
+
     error_code = FreeMem(*buffer);
+
+    destroy_data = true;
     if(RT_ERROR(error_code))
     {
         *buffer = NULL;
         return INVALID_PARAMETERS;
     }    
+    Free_block *old_block = (Free_block*)*(size_t*)((uint8_t*)buffer - 8);
+    size_t size_to_copy = old_block->size_used;
+    size_t alignment_performed = old_block->alignment;
+
+    void *buffer_start = ((uint8_t*)old_block + ralign_op(SIZE_OF_ALLOCATED_BLOCK, alignment_performed));
     
-    error_code = AllocMem(size, buffer);
+    error_code = AllocMem(size, buffer, alignment);
     if(RT_ERROR(error_code))
     {
         *buffer = NULL;
         return PHY_INSUFFICIENT_MEM;
     }
+    Free_block *new_block = (Free_block*)*(size_t*)((uint8_t*)buffer - 8);
+    //Copy all data from old to new buffer if new address is different
+
+    if(old_block != new_block)
+        rmemcpy((void*)*buffer, buffer_start, size_to_copy);
+
+
     return error_code;
 
 } 
@@ -199,7 +268,7 @@ SYS_ERROR AllocPool(size_t resc_size, void **buffer, uint64_t *pool_id)
         
             if(block_ptr->no_of_resources == block_ptr->max_resources)
             {
-                err_code = AllocMem(&size_req, (void**)&resc_ptr);
+                err_code = AllocMem(&size_req, (void**)&resc_ptr, DEFAULT_ALIGNMENT);
                 RT_INFO(err_code)
 
                 setup_AllocPool((AllocPoolHeader*)resc_ptr, aligned_size, SUB_NODE, block_ptr);
@@ -232,7 +301,7 @@ SYS_ERROR AllocPool(size_t resc_size, void **buffer, uint64_t *pool_id)
     {
         size_t size_used = RESC_SIZE(aligned_size);
         uint8_t *buf = NULL;
-        err_code = AllocMem(&size_used, (void**)&buf);
+        err_code = AllocMem(&size_used, (void**)&buf, DEFAULT_ALIGNMENT);
 
         RT_INFO(err_code)
 
@@ -289,7 +358,6 @@ SYS_ERROR FreePool(void *buffer, uint64_t *pool_id)
     }
     else
     {
-        basic_print("header sign is %d and buffer sign is %d\r\n", header->sign, *resc_ptr);
         return INVALID_PARAMETERS;
     }
 
