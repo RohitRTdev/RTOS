@@ -1,6 +1,5 @@
 #include <mm/mm.h>
 #include <mm/phyMem.h>
-#include <logging/basic_print.h>
 #include <mm/gdt.h>
 #include <rmemory.h>
 #include <utils.h>
