@@ -28,19 +28,19 @@ typedef struct __attribute__((__packed__)){
     uint64_t base_address;    
 }gdt_register;
 typedef struct __attribute__((__packed__)){
-    uint16_t seg_limit;
-    uint16_t base_address;
-    uint8_t  base;
-    uint16_t type : 4;
-    uint16_t des_type : 1;
-    uint16_t dpl : 2;
-    uint16_t seg_present : 1;
-    uint16_t seg_limit_rem : 4;
-    uint16_t avl : 1;
-    uint16_t code_seg_bit : 1;
-    uint16_t def_op_size : 1;
-    uint16_t granularity : 1;
-    uint8_t  base_rem;
+    uint64_t seg_limit : 16;
+    uint64_t base_address : 16;
+    uint64_t  base : 8;
+    uint64_t type : 4;
+    uint64_t des_type : 1;
+    uint64_t dpl : 2;
+    uint64_t seg_present : 1;
+    uint64_t seg_limit_rem : 4;
+    uint64_t avl : 1;
+    uint64_t code_seg_bit : 1;
+    uint64_t def_op_size : 1;
+    uint64_t granularity : 1;
+    uint64_t  base_rem : 8;
 }segment_descriptor;
 
 #endif
