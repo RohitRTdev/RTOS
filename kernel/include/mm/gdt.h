@@ -20,7 +20,7 @@
 #define NONCONFORMINGCODESEG 0
 #define SEGMENTPRESENT 1
 
-#define GDT_DEFAULT_SIZE BLOCK_SIZE(4096)
+#define GDT_DEFAULT_SIZE BLOCK_SIZE(4096, DEFAULT_ALIGNMENT)
 
 
 typedef struct __attribute__((__packed__)){

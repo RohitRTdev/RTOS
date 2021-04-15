@@ -59,7 +59,7 @@ typedef struct{
 #define MAXDESCRIPTORS (MAXBLOCKSETUP * PAGESIZE / SIZE_OF_FREE_BLOCK)
 #define SIZE_OF_ALLOC_HEADER ALIGN(sizeof(AllocPoolHeader), 16)
 
-#define BLOCK_SIZE(size) (size - SIZE_OF_ALLOCATED_BLOCK)
+#define BLOCK_SIZE(size, alignment) (size - ALIGN(SIZE_OF_ALLOCATED_BLOCK, alignment))
 
 
 #define RESC_SIZE(resc_size) (resc_size * DEFAULT_MAX_RESOURCES + SIZE_OF_ALLOC_HEADER)
