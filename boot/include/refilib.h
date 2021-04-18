@@ -22,6 +22,8 @@ void rstrcat(char *dest, char *src);
 INT64 rstrcmp(char *text1, char *text2);
 void rstrcpy(char *dest, char *src);
 
+VOID refizeromem(VOID *dest, UINT64 size_to_copy);
+
 //Analogous string functions for UNICODEINT64 rstrcmp(char *text1, char *text2); enabled
 UINT64 wrstrlen(CHAR16 *str);
 void wrstrcat(CHAR16 *dest, CHAR16 *src);

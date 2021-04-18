@@ -164,7 +164,8 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
         } 
         else if(!rstrcmp(section.name, ".bss"))
         {
-            //.bss section has nothing to load. We only need to allocate space for it
+            //.bss section has nothing to load. We only need to allocate space for it and set it to zero
+            refizeromem(cur_address, size_bss*PAGESIZE);
             cur_address = cur_address + size_bss*PAGESIZE;
         }
         else if(!rstrcmp(section.name, ".reloc"))

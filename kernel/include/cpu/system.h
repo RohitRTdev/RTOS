@@ -7,6 +7,8 @@
 
 #pragma pack(1)
 
+#define HALT_SYSTEM while(1){}
+
 #define READ 0
 #define WRITE 1
 
