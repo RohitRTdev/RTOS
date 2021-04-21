@@ -1,6 +1,5 @@
 #include <cpu/cpu.h>
-#include <rstrings.h>
-#include <rmemory.h>
+#include <rclib.h>
 
 
 processor_info current_processor_info;
@@ -12,9 +11,11 @@ static void cpu_get_manufacturer()
     
     cpuid(&eax, &ebx, &ecx, &edx);
 
+    //Get the Vendor string in appropriate format
     rmemcpy((void*)current_processor_info.vendor_string, (void*)&ebx, 4);
     rmemcpy((void*)(current_processor_info.vendor_string + 4), (void*)&edx, 4);
     rmemcpy((void*)(current_processor_info.vendor_string + 8), (void*)&ecx, 4);
+
     current_processor_info.vendor_string[12] = '\0';
     
     if(!rstrcmp(current_processor_info.vendor_string, AMD_VENDOR))

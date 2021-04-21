@@ -5,8 +5,6 @@
 #include <kernel.h>
 #include <mm/phyMem.h>
 
-#define DEFAULT_ALIGNMENT 16
-
 typedef struct {
     size_t RAM;
     size_t GDT_descriptors;

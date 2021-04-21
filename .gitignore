@@ -4,3 +4,4 @@ resources
 *.a
 *.EFI
 *.o
+commit_log

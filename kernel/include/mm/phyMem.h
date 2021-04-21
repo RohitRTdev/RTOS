@@ -6,13 +6,13 @@
 
 
 SYS_ERROR phyMem_init(Map_descriptor *MemMap);
-SYS_ERROR AllocMem(size_t *size, void **buffer, size_t alignment); //To receive an aligned pointer on a 2^n boundary, specify it in alignment param (max alignment = 4096) 
+SYS_ERROR AllocMem(size_t *size, void **buffer); //AllocMem always gives a PAGESIZE aligned pointer 
 SYS_ERROR FreeMem(void *buffer);
-SYS_ERROR ReAllocMem(size_t *size, void **buffer, size_t alignment); //To get default alignment, specify DEFAULT_ALIGNMENT as alignment param
-SYS_ERROR AllocPool(size_t resc_size, void **buffer, uint64_t *pool_id);
-SYS_ERROR FreePool(void *buffer, uint64_t *pool_id);
+SYS_ERROR ReAllocMem(size_t *size, void **buffer);
+SYS_ERROR AllocPool(size_t resc_size, void **buffer, size_t *pool_id);
+SYS_ERROR FreePool(void *buffer, size_t *pool_id);
 
-void allocation_algorithm(boolean algorithm);
-void add_free_mem_entry(size_t size, void *address);
+void add_free_mem_entry(size_t size, size_t address);
+void add_allocated_mem_entry(size_t size, size_t address);
 
 #endif

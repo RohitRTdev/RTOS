@@ -20,13 +20,22 @@ static uint64_t RAM_calc(Map_descriptor *map)
 
 static SYS_ERROR set_up_gdt()
 {
+    //Sets up a flat memory model
     segment_descriptor generic_user_descriptor;
+    gdt_register gdt_reg;
+
+    //Remove the old GDT set up by the firmware
+
+    store_gdt(&gdt_reg);
+
+    add_free_mem_entry(gdt_reg.limit + 1, gdt_reg.base_address);
+
     rzeromem((void*)&generic_user_descriptor, sizeof(segment_descriptor)); //Zero the descriptor 
 
     size_t gdt_allocation_size = GDT_DEFAULT_SIZE;
     segment_descriptor *gdt_ptr = NULL; //GDT is aligned to 8 bytes by default
 
-    SYS_ERROR gdt_alloc_error = AllocMem(&gdt_allocation_size, (void**)&gdt_ptr, DEFAULT_ALIGNMENT);
+    SYS_ERROR gdt_alloc_error = AllocMem(&gdt_allocation_size, (void**)&gdt_ptr);
     RT_INFO(gdt_alloc_error)
 
     //NULL descriptor
@@ -61,7 +70,9 @@ static SYS_ERROR set_up_gdt()
 
     MemInfo.GDT_descriptors = 5;
 
-    gdt_register gdt_reg = { MemInfo.GDT_descriptors * sizeof(segment_descriptor), (uint64_t)gdt_ptr};
+    //Update the location and size of new GDT
+    gdt_reg.limit = MemInfo.GDT_descriptors * sizeof(segment_descriptor) - 1; 
+    gdt_reg.base_address = (uint64_t)gdt_ptr;
 
     load_gdt(&gdt_reg);
 
