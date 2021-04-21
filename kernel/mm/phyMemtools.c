@@ -141,8 +141,8 @@ SYS_ERROR smallest_fit(size_t* size_tmp, Super_Mem_desc *desc, void **block_addr
     *block_address = best_block;
 
     /*  AllocMem gives the biggest continuous block it can find 
-        even if it is less than the requested size and hence doesn't 
-        return only a silent error. This is useful to the virtual memory allocator. 
+        even if it is less than the requested size and hence  
+        returns only a silent error. This is useful to the virtual memory allocator. 
     */ 
 
     if(best_block == root && root->pages < size / PAGESIZE)
