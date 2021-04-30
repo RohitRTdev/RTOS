@@ -11,9 +11,9 @@ all: RTOS img test
 
 
 RTOS:
-	$(OPERATE_LIB_RC) 
-	$(OPERATE_LIB_EFI) 
-	$(OPERATE_BOOT) 
+	$(OPERATE_LIB_RC) librc.a
+	$(OPERATE_LIB_EFI) librefi.a
+	$(OPERATE_BOOT) BOOTx64.EFI
 	$(OPERATE_KERNEL) RTcore.rm
 	@echo SUCCESS!
 	
