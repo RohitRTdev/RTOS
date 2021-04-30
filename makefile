@@ -14,7 +14,7 @@ RTOS:
 	$(OPERATE_LIB_RC) 
 	$(OPERATE_LIB_EFI) 
 	$(OPERATE_BOOT) 
-	$(OPERATE_KERNEL) 
+	$(OPERATE_KERNEL) RTcore.rm
 	@echo SUCCESS!
 	
 img:

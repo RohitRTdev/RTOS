@@ -4,8 +4,6 @@
 #include <rtypes.h>
 #include <utils.h>
 
-#define HALT_SYSTEM while(1){}
-
 #define READ 0
 #define WRITE 1
 
@@ -49,7 +47,6 @@ uint64_t _cr_8(uint64_t val, boolean op);
 
 #define CR(index, val, op) _cr_##index(val, op)  //Valid operations are read and write
 
-
-
+void halt_system() __attribute__((noreturn));
 
 #endif

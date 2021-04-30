@@ -3,6 +3,7 @@
 
 #include <error/syserror.h>
 #include <cpu/system.h>
+#include <cpu/features.h>
 
  typedef struct{
     uint16_t physical_range: 8;
@@ -19,13 +20,21 @@ typedef struct{
 
 }processor_info;
 
+typedef struct{
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
+}cpuid_registers;
+
 #define AMD_VENDOR "AuthenticAMD"
 #define INTEL_VENDOR "GenuineIntel"
 
 #define AMD 0
 #define INTEL 1
 
-void cpuid(volatile uint32_t *eax,volatile uint32_t *ebx,volatile uint32_t *ecx,volatile uint32_t *edx);
+void cpuid(volatile cpuid_registers *registers);
 SYS_ERROR CPU_init();
-
+uint64_t rdmsr(uint32_t msr_address);
+void wrmsr(uint32_t msr_address, uint64_t write);
 #endif

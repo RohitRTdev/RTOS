@@ -1,12 +1,13 @@
 CC = x86_64-w64-mingw32-gcc
-CFLAGS = -mno-red-zone -Iinclude/ -c  
+AS = x86_64-w64-mingw32-as
+CFLAGS = -mno-red-zone -Iinclude/ 
 SRC = $(wildcard *.c *.s */*.c */*.s)
-OBJ = *.o
+OBJS = $(patsubst %.s, %.o, $(patsubst %.c, %.o, $(SRC)))
 
-librc.a: $(SRC) 
-	$(CC) $(CFLAGS) $(SRC)
-	ar -rcs $@ $(OBJ)
-	
+debug: 
+
+librc.a: $(OBJS)
+	ar -rcs $@ $^		
 	
 clean:
-	rm -rf *.o
+	rm -rf $(OBJS)

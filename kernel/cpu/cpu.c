@@ -3,18 +3,19 @@
 
 
 processor_info current_processor_info;
+
+void feature_enumerate();
 uint8_t sse_check();
+
 static void cpu_get_manufacturer()
 {
-    uint32_t eax = 0;
-    uint32_t ebx, ecx, edx;
-    
-    cpuid(&eax, &ebx, &ecx, &edx);
+    cpuid_registers registers = {0, 0, 0, 0};
+    cpuid(&registers);
 
     //Get the Vendor string in appropriate format
-    rmemcpy((void*)current_processor_info.vendor_string, (void*)&ebx, 4);
-    rmemcpy((void*)(current_processor_info.vendor_string + 4), (void*)&edx, 4);
-    rmemcpy((void*)(current_processor_info.vendor_string + 8), (void*)&ecx, 4);
+    rmemcpy((void*)current_processor_info.vendor_string, (void*)&registers.ebx, 4);
+    rmemcpy((void*)(current_processor_info.vendor_string + 4), (void*)&registers.edx, 4);
+    rmemcpy((void*)(current_processor_info.vendor_string + 8), (void*)&registers.ecx, 4);
 
     current_processor_info.vendor_string[12] = '\0';
     
@@ -31,12 +32,11 @@ static void cpu_get_manufacturer()
 }
 static void cpu_address_range()
 {
-    uint32_t eax = 0x80000008;
-    uint32_t ebx, ecx, edx;
+    cpuid_registers registers = {0x80000008, 0, 0, 0};
 
-    cpuid(&eax, &ebx, &ecx, &edx);
-    current_processor_info.cpu_range.physical_range = (uint8_t)eax;
-    current_processor_info.cpu_range.virtual_range = (uint8_t)(eax >> 8);
+    cpuid(&registers);
+    current_processor_info.cpu_range.physical_range = (uint8_t)registers.eax;
+    current_processor_info.cpu_range.virtual_range = (uint8_t)(registers.eax >> 8);
 }
 
 SYS_ERROR CPU_init()
@@ -52,6 +52,8 @@ SYS_ERROR CPU_init()
         return CPU_NOT_SUPPORTED;
 
     cpu_address_range();
+
+    feature_enumerate();
 
 
     return err_status;

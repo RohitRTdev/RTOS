@@ -115,7 +115,6 @@ SYS_ERROR AllocMem(size_t *size_ptr, void **buffer)
     allocated_block->address = free_block->address;
     allocated_block->size_used = sizeToAllocate;
     allocated_block->total_pages = roundedSize / PAGESIZE;
-    global_desc.free_space -= roundedSize / PAGESIZE;
 
     global_desc.no_of_alloc_desc++;
 
@@ -132,7 +131,7 @@ SYS_ERROR AllocMem(size_t *size_ptr, void **buffer)
          
     //Update how much free space is remaining
 
-    global_desc.free_space -= roundedSize * PAGESIZE;
+    global_desc.free_space -= roundedSize;
 
     //Give the caller the requested buffer address
     *buffer = free_block->address;

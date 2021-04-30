@@ -1,11 +1,13 @@
 CC = x86_64-w64-mingw32-gcc
-CFLAGS = -mno-red-zone -Wno-varargs -I../../boot/include/ -c  
+AS = x86_64-w64-mingw32-as
+CFLAGS = -mno-red-zone -Wno-varargs -I../../boot/include/ 
 SRC = $(wildcard *.c)
-OBJ = *.o
+OBJS = $(patsubst %.c, %.o, $(SRC))
 
-librefi.a: $(SRC)
-	$(CC) $(CFLAGS) $^
-	ar -rcs $@ $(OBJ)
+debug:
+
+librefi.a: $(OBJS)
+	ar -rcs $@ $(OBJS)
 		
 clean:
-	rm -rf *.o
+	rm -rf $(OBJS)

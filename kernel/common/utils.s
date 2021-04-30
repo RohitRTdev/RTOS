@@ -15,3 +15,4 @@ load_gdt:
 store_gdt:
     sgdt (%rcx)
     ret
+    
