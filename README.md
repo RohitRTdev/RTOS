@@ -12,16 +12,18 @@ The OS is at a very early stage and only sports basic services. RTOS follows the
 
 ## Build
 
+* Download mingw
+
 * To build the OS, simply clone the directory and execute 
 >>make RTOS
 
 This will create output files RT_core.rm in kernel directory and BOOTx64.EFI in boot directory.
 Now create a disk image with EFI partition containing the following hierarchy.
 
-Each of the below is a folder with a file at the end.  
-EFI & RT_core.rm must be at the top of the hierarchy.  
-EFI--> BOOT --> BOOTX64.EFI  
-RT_core.rm  
+Each of the below is a folder with a file at the end.    
+EFI--> BOOT --> BOOTx64.EFI  
+Modules--> RT_core.rm
+Fonts--> *.psf(font files present in resources directory)  
 
 ## Testing 
 Testing can be done by burning the image file to a flash drive and running it on real machine by choosing to boot through the flash drive in BIOS setup.

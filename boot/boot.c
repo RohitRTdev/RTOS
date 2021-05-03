@@ -87,8 +87,8 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
     boot_info boot_info_send;
     EFI_GRAPHICS_OUTPUT_MODE_INFORMATION graph_info;
     VOID *acpi = NULL;
-    CHAR16 *image_path = L"\\RTcore.rm";
-    CHAR16 *basic_font_path = L"\\zap-light18.psf";
+    CHAR16 *image_path = L"\\Modules\\RTcore.rm";
+    CHAR16 *basic_font_path = L"\\Fonts\\zap-light18.psf";
 
    
 

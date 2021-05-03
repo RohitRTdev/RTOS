@@ -9,6 +9,11 @@ OPERATE_LIB_EFI = cd $(LIB_DIR_EFI) && $(MAKE)
 
 all: RTOS img test
 
+debug:
+	$(OPERATE_LIB_RC)
+	$(OPERATE_LIB_EFI) 
+	$(OPERATE_BOOT) 
+	$(OPERATE_KERNEL) RTcore.rm
 
 RTOS:
 	$(OPERATE_LIB_RC) librc.a
@@ -18,8 +23,7 @@ RTOS:
 	@echo SUCCESS!
 	
 img:
-	$(OPERATE_KERNEL) $@ 
-	@echo SUCCESS!
+	$(OPERATE_KERNEL) img
 test:
 	$(OPERATE_KERNEL) $@ 
 

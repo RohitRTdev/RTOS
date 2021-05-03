@@ -2,7 +2,6 @@
 #define _PE_H_
 #include "refi.h"
 #include "refilib.h"
-#pragma pack(1)
 
 #define pe_signature 0x00004550  //PE/0/0 (In little endian)
 #define signature_offset 0x3c //Location of file offset to PE signature

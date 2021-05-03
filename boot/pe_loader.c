@@ -6,6 +6,8 @@
 #include <pe.h>
 #include <primary_loader.h>
 
+#pragma pack(1)
+
 static void pe_load_section(EFI_FILE_PROTOCOL *file_buf, UINT64 size, Section_header section, UINT8 *load_address)
 {
 
@@ -229,7 +231,7 @@ EFI_HANDLE file_init(EFI_HANDLE ImageHandle)
     EFI_GUID load_img_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
     EFI_LOADED_IMAGE_PROTOCOL *load_img_prot = NULL;
 
-    //Get teh loaded image protocol for ImageHandle
+    //Get the loaded image protocol for ImageHandle
     status = BS->HandleProtocol(ImageHandle, &load_img_guid, (void**)&load_img_prot);    
     EFI_FATAL_REPORT(L"Load image protocol error", status);
 

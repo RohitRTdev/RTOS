@@ -26,9 +26,10 @@ static void kernel_main(boot_info *boot)
 
     err_status = mm_init(boot->Map);
     RT_ERROR_REPORT("Failed to initialise Memory Manager", err_status);
-    basic_print("Hello world\r\n");
 
-    while(1){}
+    basic_print("Loaded RTOS 1.0...\r\n. To exit, click the shutdown button(on a real machine)");
+
+    halt_system(); 
 }
 
 void kernel_entry(boot_info *boot)

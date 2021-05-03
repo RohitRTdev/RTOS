@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <rstrings.h>
 
+#pragma GCC diagnostic ignored "-Wvarargs"
+
 static uint64_t basic_print_parser(char *str, uint64_t lastlocation, uint8_t *type, uint64_t length, uint8_t *precision)
 {
     uint8_t flag = 0x00;

@@ -3,7 +3,7 @@ AS = x86_64-w64-mingw32-as
 LD = x86_64-w64-mingw32-ld
 INCLUDE = -Iinclude -I../lib/rclib/include
 LDSCRIPTS = ../ldscripts/kernel_script.ld
-CFLAGS = -ffreestanding  -mno-red-zone -fPIC -Wall -Wno-varargs  $(INCLUDE)
+CFLAGS = -ffreestanding  -mno-red-zone -fPIC -Wall $(INCLUDE)
 LDFLAGS =  -nostdlib -T $(LDSCRIPTS) --image-base=0 --gc-sections -shared --subsystem 0 -e kernel_entry -o
 LIB = ../lib/rclib/librc.a
 DIR := $(filter-out $(wildcard *.*) include ,$(wildcard *))
@@ -17,6 +17,7 @@ CPU = Nehalem
 BIOS= ../resources/OVMF.fd
 FONT = ../resources/*.psf
 BOOT_IMAGE = ../boot/BOOTx64.EFI
+SYSFILES = SystemFiles
 
 debug: 
 
@@ -27,13 +28,15 @@ $(TARGET): $(OBJS) $(LIB)
 img: $(BOOT_IMAGE)
 	$(eval var := $(shell sudo losetup -f))
 	sudo losetup --offset 1048576 --sizelimit 52428800 $(var) $(IMG)
-	mkdir mnt/
+	mkdir -p mnt/ 
 	sudo mount $(var) mnt/
+	sudo mkdir -p mnt/EFI mnt/EFI/BOOT/ mnt/Modules mnt/Fonts
 	sudo cp $^ mnt/$(mount)
-	sudo cp $(TARGET) $(FONT) mnt/
-	sudo umount mnt/
-	rm -rf mnt/
+	sudo cp *.rm mnt/Modules
+	sudo cp $(FONT) mnt/Fonts
 	sudo losetup -d $(var)
+	sudo umount mnt
+	rm -rf mnt/
 
 test: $(IMG)
 	$(TEST) -cpu $(CPU) -bios $(BIOS) -drive file=$(IMG),if=ide

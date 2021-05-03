@@ -1,5 +1,6 @@
 #include <refilib.h>
 #include <stdarg.h>
+#pragma GCC diagnostic ignored "-Wvarargs"
 
 static void conv64tostr(UINT64 value, CHAR16* outstr)
 {
