@@ -1,5 +1,6 @@
 #include <mm/phyMemtools.h>
 #include <rclib.h>
+#include <logging/basic_print.h>
 
 static size_t n_desc;
 
@@ -11,6 +12,13 @@ size_t* phy_block_finder(Map_descriptor *map)
     n_desc = map->MapSize/map->DescSize;
     uint32_t type = 0;
     EFI_MEMORY_DESCRIPTOR *memmap = NULL;
+
+    //Reserve the 0th page (cannot be allocated)
+
+    memmap = getMemMapDescriptor(map->Map, map->DescSize, 0);
+    memmap->PhysicalStart += PAGESIZE;
+    memmap->VirtualStart += PAGESIZE;
+    memmap->NumberOfPages -= 1;
 
     while(i < n_desc)
     {
@@ -32,8 +40,17 @@ size_t* phy_block_finder(Map_descriptor *map)
                 }
             }
         }
+        if(address != ADDRESS_NOT_FOUND)
+            break;
         i++;
     }
+
+    alloc_mem_desc *zero_descriptor = (alloc_mem_desc*)((uint8_t*)address + MAXFREEDESCRIPTORS * SIZE_OF_FREE_DESCRIPTOR);
+
+    zero_descriptor->address = 0;
+    zero_descriptor->size_used = PAGESIZE;
+    zero_descriptor->total_pages = 1;
+    
     return (size_t*)address;
 }
 
@@ -43,10 +60,15 @@ SYS_ERROR phy_set_blocks(Map_descriptor *map, Super_Mem_desc *desc)
     size_t i = 0;
     EFI_MEMORY_DESCRIPTOR *memmap = NULL;
     free_mem_desc mem_desc;
+    alloc_mem_desc alloc_desc;
     free_mem_desc *base_address = desc->free_desc;
+    alloc_mem_desc *base_alloc_address = desc->alloc_desc + 1;
     size_t type = 0;
     SYS_ERROR err_code = NO_ERROR;
     size_t allocated_size = 0;
+    boolean memory_address_set = false;
+
+    desc->no_of_alloc_desc = 1; //To account for zero descriptor
 
     while(i < n_desc)
     {
@@ -65,6 +87,31 @@ SYS_ERROR phy_set_blocks(Map_descriptor *map, Super_Mem_desc *desc)
                     base_address += 1;
                     allocated_size += 1;
                     desc->free_space += mem_desc.pages * PAGESIZE;
+                    break;
+            }
+            
+            default:{
+                    alloc_desc.address = (size_t*)memmap->PhysicalStart;
+
+                    if((size_t)alloc_desc.address >= (size_t)desc->free_desc && !memory_address_set)
+                    {
+                        alloc_desc.address = (size_t*)desc->free_desc;
+                        alloc_desc.total_pages = MAXBLOCKSETUP;
+                        alloc_desc.size_used = MAXBLOCKSETUP * PAGESIZE;
+                        memory_address_set = true;
+
+                        *(base_alloc_address) = alloc_desc;
+                        base_alloc_address++;
+                        desc->no_of_alloc_desc++;
+                        alloc_desc.address = (size_t*)memmap->PhysicalStart;   
+                    }
+                    alloc_desc.total_pages = memmap->NumberOfPages;
+                    alloc_desc.size_used = memmap->NumberOfPages * PAGESIZE;
+                    
+                
+                    *(base_alloc_address) = alloc_desc;
+                    base_alloc_address++;
+                    desc->no_of_alloc_desc++;
             }
 
         }
@@ -72,6 +119,7 @@ SYS_ERROR phy_set_blocks(Map_descriptor *map, Super_Mem_desc *desc)
     }
     if(allocated_size > MAXFREEDESCRIPTORS)
         err_code = MAXBLOCKOVERFLOW;
+
     desc->no_of_free_desc = allocated_size;
 
     return err_code;
@@ -83,6 +131,8 @@ void phy_defrag(Super_Mem_desc *desc)
     free_mem_desc *root_block = desc->free_desc;
     free_mem_desc *block_address = root_block;
     size_t no_of_blocks = desc->no_of_free_desc;
+
+    //Perform defragmentation for free descriptors
     while(i < no_of_blocks)
     {
         if((uint64_t)block_address[i].address == (uint64_t)root_block->address + root_block->pages * PAGESIZE)
@@ -98,6 +148,28 @@ void phy_defrag(Super_Mem_desc *desc)
         i++;
 
     }
+    //Perform defragmentation for allocated descriptors
+    alloc_mem_desc *root_alloc_block = desc->alloc_desc;
+    alloc_mem_desc *alloc_block_address = root_alloc_block;
+    no_of_blocks = desc->no_of_alloc_desc;
+    i = 1;
+
+    while(i < no_of_blocks)
+    {
+        if((uint64_t)alloc_block_address[i].address == (uint64_t)root_alloc_block->address + root_alloc_block->total_pages * PAGESIZE)
+        {
+            root_alloc_block->total_pages += alloc_block_address[i].total_pages;
+            alloc_block_address[i].total_pages = 0;
+            desc->no_of_alloc_desc--;
+        }
+        else
+        {   
+            root_alloc_block = alloc_block_address + i;            
+        }
+        i++;
+    }
+
+
 }
 
 SYS_ERROR smallest_fit(size_t* size_tmp, Super_Mem_desc *desc, void **block_address)
@@ -279,7 +351,8 @@ void init_free_blocks(Super_Mem_desc *desc)
         root_block[i++].pages = 0;
     }
     alloc_mem_desc *alloc_root_block = desc->alloc_desc;
-    i = 0; 
+    i = 1; //1 is input because we don't want to zero out zero_descriptor
+
     //Zero out all the alloc descriptors
     while(i < desc->maxdescriptors_alloc)
     {

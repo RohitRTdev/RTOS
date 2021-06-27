@@ -2,9 +2,9 @@
 #define __BASIC_FONT_H__
 
 
-#include <refi.h>
-#include <refilib.h>
-
+#include <refi/refi.h>
+#include <refi/refilib.h>
+#include "boot_structs.h"
 
 //PSF_1
 #define PSF1_MAGIC0     0x36
@@ -42,6 +42,6 @@ typedef struct{
     UINT32 height, width; 
 }PSF2_header;
 
-UINT8* basic_font_load(EFI_HANDLE ImageHandle, CHAR16 *path);
+void basic_font_load(EFI_HANDLE ImageHandle, CHAR16 *path, basic_font_info *font_info);
 
 #endif

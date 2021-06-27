@@ -9,7 +9,7 @@
 #define _bit_set(val, bit) (val |= _BV(bit))
 #define _bit_clear(val, bit) (val &= _BC(bit))
 #define _set_bit_check(val, bit) ((val & _BV(bit)) != 0)
-#define _clear_bit_check(val, bit) ((val & _BV(bit)) == 0)
+#define _clear_bit_check(val, bit) ((val & _BV(bit)) == 0) 
 
 
 void _cli();

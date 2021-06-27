@@ -57,13 +57,24 @@ typedef struct{
     uint64_t pages;
 }Image_data;
 
+typedef struct{
+    uint8_t* basic_font_base;
+    uint64_t basic_font_size;
+}basic_font_info;
+
+typedef struct{
+    uint8_t *stack_top;
+    uint64_t stack_size;
+}stack_info;
 
 typedef struct{
     Map_descriptor* Map;
     EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *framebuffer;
     Image_data *image;
     void *acpi;
-    uint8_t *basic_font_base;
+    basic_font_info basic_font;
+    stack_info stack;
+    size_t max_virtual_width;
 }boot_info;
 
 

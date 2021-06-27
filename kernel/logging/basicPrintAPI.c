@@ -11,7 +11,7 @@ static uint64_t basic_print_parser(char *str, uint64_t lastlocation, uint8_t *ty
     uint64_t i = lastlocation + 1;
     int8_t digittest;
     uint8_t accuracy = 0;
-    
+  
     while(!(str[i] == '%'))
     {
         if(str[i] == '\0')

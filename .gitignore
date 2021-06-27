@@ -5,3 +5,4 @@ resources
 *.EFI
 *.o
 commit_log
+debug

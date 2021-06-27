@@ -3,8 +3,10 @@
 #include <mm/gdt.h>
 #include <rmemory.h>
 #include <utils.h>
+#include <logging/basic_print.h>
 
 static meminfo MemInfo;
+
 static uint64_t RAM_calc(Map_descriptor *map)
 {
     uint64_t n_desc = map->MapSize/map->DescSize;
@@ -28,7 +30,11 @@ static SYS_ERROR set_up_gdt()
 
     store_gdt(&gdt_reg);
 
-    add_free_mem_entry(gdt_reg.limit + 1, gdt_reg.base_address);
+    uint8_t *old_gdt_base_address = (uint8_t*)ralign_op(gdt_reg.base_address, 4096);
+
+    old_gdt_base_address = ((uint64_t)old_gdt_base_address > gdt_reg.base_address)?old_gdt_base_address - 1: old_gdt_base_address;
+    
+    FreeMem((void*)old_gdt_base_address);
 
     rzeromem((void*)&generic_user_descriptor, sizeof(segment_descriptor)); //Zero the descriptor 
 
@@ -83,6 +89,7 @@ SYS_ERROR mm_init(Map_descriptor *map)
 {
     SYS_ERROR err_code = NO_ERROR;
     MemInfo.RAM = RAM_calc(map);
+    basic_print("ram:%d\r\n", MemInfo.RAM);
     
     err_code = phyMem_init(map);  //Initialise physical memory
     RT_INFO(err_code)

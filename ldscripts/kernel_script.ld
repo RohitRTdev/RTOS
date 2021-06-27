@@ -35,8 +35,8 @@ SECTIONS{
         *(.drectve)
         *(.xdata)
         *(.pdata)
-        *(.idata)
         *(.edata)
+        *(.idata)
     }
 
 }

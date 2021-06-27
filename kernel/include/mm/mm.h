@@ -4,6 +4,7 @@
 #include <error/syserror.h>
 #include <kernel.h>
 #include <mm/phyMem.h>
+#include <mm/virtualmem.h>
 
 typedef struct {
     size_t RAM;

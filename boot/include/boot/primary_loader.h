@@ -1,7 +1,7 @@
 #ifndef _PRIMARY_LOADER_H_
 #define _PRIMARY_LOADER_H_
 
-#include "refi.h"
+#include <refi/refi.h>
 
 typedef struct{
     UINT8 *entry_point;

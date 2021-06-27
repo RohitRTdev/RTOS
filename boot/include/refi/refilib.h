@@ -31,4 +31,7 @@ INT64 wrstrcmp(CHAR16 *text1, CHAR16 *text2);
 void wrstrcpy(CHAR16 *dest, CHAR16 *src);
 
 
+//Miscellaneous
+BOOLEAN guid_check(EFI_GUID guid1, EFI_GUID guid2);
+
 #endif

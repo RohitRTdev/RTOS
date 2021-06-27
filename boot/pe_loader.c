@@ -3,10 +3,8 @@
 /* Loads .text, .data and .bss sections
    without much checking involved(Feel free to load more sections and to include more checks if you're interested) */
 
-#include <pe.h>
-#include <primary_loader.h>
-
-#pragma pack(1)
+#include <boot/pe.h>
+#include <boot/primary_loader.h>
 
 static void pe_load_section(EFI_FILE_PROTOCOL *file_buf, UINT64 size, Section_header section, UINT8 *load_address)
 {
@@ -139,7 +137,7 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
     pages = size_code + size_data + size_bss;
 
     //Allocate suitable amount of pages to load requested file
-    status = BS->AllocatePool(EfiLoaderData, pages * PAGESIZE, (void**)&load_address);
+    status = BS->AllocatePages(AllocateAnyPages, EfiLoaderData, pages, (EFI_PHYSICAL_ADDRESS*)&load_address);
     EFI_FATAL_REPORT(L"Memory is insufficient to load kernel", status);
 
     buf_size = sizeof(section);
@@ -157,18 +155,18 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
         {
             text_sect = TRUE;
             pe_load_section(file_buf, pe_opt_hdr.SizeOfCode, section, cur_address);
-            cur_address = cur_address + size_code*PAGESIZE;
+            cur_address = cur_address + size_code * PAGESIZE;
         }
         else if(!rstrcmp(section.name, ".data"))
         {
             pe_load_section(file_buf, pe_opt_hdr.SizeOfInitializedData, section, cur_address);
-            cur_address = cur_address + size_data*PAGESIZE;
+            cur_address = cur_address + size_data * PAGESIZE;
         } 
         else if(!rstrcmp(section.name, ".bss"))
         {
             //.bss section has nothing to load. We only need to allocate space for it and set it to zero
             refizeromem(cur_address, size_bss*PAGESIZE);
-            cur_address = cur_address + size_bss*PAGESIZE;
+            cur_address = cur_address + size_bss * PAGESIZE;
         }
         else if(!rstrcmp(section.name, ".reloc"))
         {

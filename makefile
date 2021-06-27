@@ -7,6 +7,7 @@ OPERATE_KERNEL = cd $(KERNEL_DIR) && $(MAKE)
 OPERATE_LIB_RC = cd $(LIB_DIR_RC) && $(MAKE)
 OPERATE_LIB_EFI = cd $(LIB_DIR_EFI) && $(MAKE)
 
+debug-test: debug img test
 all: RTOS img test
 
 debug:

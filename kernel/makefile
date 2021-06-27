@@ -4,7 +4,7 @@ LD = x86_64-w64-mingw32-ld
 INCLUDE = -Iinclude -I../lib/rclib/include
 LDSCRIPTS = ../ldscripts/kernel_script.ld
 CFLAGS = -ffreestanding  -mno-red-zone -fPIC -Wall $(INCLUDE)
-LDFLAGS =  -nostdlib -T $(LDSCRIPTS) --image-base=0 --gc-sections -shared --subsystem 0 -e kernel_entry -o
+LDFLAGS =  -nostdlib -T $(LDSCRIPTS) --image-base=0 --gc-sections -s -shared --subsystem 0 -e kernel_entry -o
 LIB = ../lib/rclib/librc.a
 DIR := $(filter-out $(wildcard *.*) include ,$(wildcard *))
 SRC := $(wildcard $(foreach dir,$(DIR),$(dir)/*[.c|.s]) *.c *.s ../utils/*.c ../utils/*.s)
@@ -39,7 +39,7 @@ img: $(BOOT_IMAGE)
 	rm -rf mnt/
 
 test: $(IMG)
-	$(TEST) -cpu $(CPU) -bios $(BIOS) -drive file=$(IMG),if=ide
+	$(TEST) -cpu $(CPU) -bios $(BIOS) -drive file=$(IMG),format=raw,if=ide
 
 .PHONY: clean
 clean:

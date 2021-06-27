@@ -8,13 +8,15 @@ extern font_header generic_psf_info;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE framebuffer; 
 extern EFI_GRAPHICS_OUTPUT_MODE_INFORMATION frameInfo;
 
-static uint32_t *cursor_location;
-static uint32_t *frameBase;
+static struct logger_props{
+    uint32_t *cursor_location;
+    uint32_t *frameBase;
+    uint32_t pseudo_hor_res;
+    uint64_t width_font;
+    boolean edge_case; //This variable makes sure that "endline" condition is not re-triggered after processing a '/n' or '/r' condition
+}logger;
 
-static uint64_t width_font;
-static uint32_t pseudo_hor_res;
-
-static boolean edge_case; //This variable makes sure that "endline" condition is not triggered after '/n' or '/r' condition
+ 
 
 
 void basic_print_init()
@@ -23,32 +25,38 @@ void basic_print_init()
     generic_psf_info.b_color = 0x00000000UL;
     generic_psf_info.f_color = 0x00FFFFFFUL;
 
-    frameBase = (uint32_t*)framebuffer.FrameBufferBase;
+    logger.frameBase = (uint32_t*)framebuffer.FrameBufferBase;
 
-    width_font = ralign(generic_psf_info.width,8)/8;
-    cursor_location = frameBase;
-
-    pseudo_hor_res = frameInfo.HorizontalResolution - frameInfo.HorizontalResolution % generic_psf_info.width;
-    edge_case = false;
+    logger.width_font = ralign(generic_psf_info.width,8)/8;
+    logger.cursor_location = logger.frameBase;
+    logger.pseudo_hor_res = frameInfo.HorizontalResolution - frameInfo.HorizontalResolution % generic_psf_info.width;
+    logger.edge_case = false;
 }
 
 static void basic_print_char(char ch, uint32_t *base_pixel)
 {
     uint8_t *char_base = (uint8_t*)((uint64_t)generic_psf_info.base + ch*generic_psf_info.charsize);
     uint64_t i = 0, j = 0, k = 0;
-    while(i < generic_psf_info.height)
+    uint64_t width = generic_psf_info.width;
+    uint64_t height = generic_psf_info.height;
+    uint64_t width_font = logger.width_font;
+    uint32_t f_color = generic_psf_info.f_color;
+    uint32_t b_color = generic_psf_info.b_color;
+    uint32_t PixelsPerScanLine = frameInfo.PixelsPerScanLine;
+
+    while(i < height)
     {
         while(j < width_font)
         {
             while(k < 8)
             {
-                if(j * 8 + k == generic_psf_info.width)
+                if(j * 8 + k == width)
                     break;
                 if(*(char_base + width_font*i + j) & (0x80 >> k))
-                    *(base_pixel + j * 8 + k) = generic_psf_info.f_color;
+                    *(base_pixel + j * 8 + k) = f_color;
                 else
                 {
-                    *(base_pixel + j * 8 + k) = generic_psf_info.b_color;
+                    *(base_pixel + j * 8 + k) = b_color;
                 }
                 k++;
                 
@@ -63,7 +71,7 @@ static void basic_print_char(char ch, uint32_t *base_pixel)
         }
         i++;
         j = 0;
-        base_pixel += frameInfo.PixelsPerScanLine;
+        base_pixel += PixelsPerScanLine;
     }
 }
 
@@ -71,31 +79,36 @@ void basic_print_str(char *str)
 {
     uint64_t conv_factor = generic_psf_info.width;
     uint64_t i = 0;
+    uint64_t height = generic_psf_info.height;
+    uint32_t *frameBase = logger.frameBase;
+    uint32_t pseudo_hor_res = logger.pseudo_hor_res;
+    uint32_t PixelsPerScanLine = frameInfo.PixelsPerScanLine;
+
     while(str[i] != '\0')
     {
-        if((cursor_location - frameBase) % pseudo_hor_res == 0 && cursor_location != frameBase && !edge_case)  //End of a line
+        if((logger.cursor_location - frameBase) % pseudo_hor_res == 0 && logger.cursor_location != frameBase && !logger.edge_case)  //End of a line
         {
-            cursor_location += frameInfo.PixelsPerScanLine - pseudo_hor_res + frameInfo.PixelsPerScanLine * (generic_psf_info.height - 1);
+            logger.cursor_location += PixelsPerScanLine - pseudo_hor_res + PixelsPerScanLine * (height - 1);
         }
         if(str[i] == '\n')
         {
-            cursor_location += frameInfo.PixelsPerScanLine * generic_psf_info.height;
+            logger.cursor_location += PixelsPerScanLine * height;
             i++;
-            edge_case = true;
+            logger.edge_case = true;
             continue;
         }
         else if(str[i] == '\r')
         {
-            cursor_location = cursor_location - ((cursor_location - frameBase) % frameInfo.PixelsPerScanLine);
+            logger.cursor_location = logger.cursor_location - ((logger.cursor_location - frameBase) % PixelsPerScanLine);
             i++;
-            edge_case = true;
+            logger.edge_case = true;
             continue;
         }
 
-        basic_print_char(str[i], cursor_location);
+        basic_print_char(str[i], logger.cursor_location);
         i++;
-        cursor_location += conv_factor;
-        edge_case = false;
+        logger.cursor_location += conv_factor;
+        logger.edge_case = false;
     }    
     
 }
