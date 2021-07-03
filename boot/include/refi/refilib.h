@@ -13,6 +13,7 @@ BS(Boot Services) and RT(Runtime Services) defined */
 void InitLib(IN EFI_HANDLE ImageHandle,IN EFI_SYSTEM_TABLE* SystemTable);
 //Print function accepts two tokens as of now, %s(string) and %d(64 bit unsigned integer)
 EFI_STATUS printEFI(IN CHAR16 *string, ...);
+EFI_STATUS EFI_clearscreen();
 //Function to report fatal EFI errors
 void EFI_FATAL_REPORT(IN CHAR16 *ErrorMessage, IN EFI_STATUS status_code);
 
@@ -29,6 +30,9 @@ UINT64 wrstrlen(CHAR16 *str);
 void wrstrcat(CHAR16 *dest, CHAR16 *src);
 INT64 wrstrcmp(CHAR16 *text1, CHAR16 *text2);
 void wrstrcpy(CHAR16 *dest, CHAR16 *src);
+
+//File operations
+
 
 
 //Miscellaneous

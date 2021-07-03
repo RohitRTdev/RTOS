@@ -1,0 +1,20 @@
+CC := x86_64-w64-mingw32-gcc
+AS := x86_64-w64-mingw32-as
+LD := x86_64-w64-mingw32-ld
+
+INCLUDE = -Iinclude/
+ifeq ($(CURDIR), kernel)
+    INCLUDE += -I$(LIB_HEADER)
+    SUBSYSTEM := 0
+    MODULE_ENTRY := kernel_entry
+else
+    SUBSYSTEM := 10
+    MODULE_ENTRY := efi_main
+endif
+
+
+CFLAGS = -ffreestanding -mno-red-zone -fPIC $(INCLUDE)  
+LDFLAGS = -nostdlib --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY) -o
+
+SRC := $(filter-out include*/*.* $(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
+OBJS := $(patsubst %.s, %.o, $(patsubst %.c, %.o ,$(SRC))) #Create the list of object files

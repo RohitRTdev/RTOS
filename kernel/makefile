@@ -1,10 +1,10 @@
-CC = x86_64-w64-mingw32-gcc
-AS = x86_64-w64-mingw32-as
-LD = x86_64-w64-mingw32-ld
-INCLUDE = -Iinclude -I../lib/rclib/include
-LDSCRIPTS = ../ldscripts/kernel_script.ld
-CFLAGS = -ffreestanding  -mno-red-zone -fPIC -Wall $(INCLUDE)
-LDFLAGS =  -nostdlib -T $(LDSCRIPTS) --image-base=0 --gc-sections -s -shared --subsystem 0 -e kernel_entry -o
+include ../makefile.default
+
+LIB_HEADER =../lib/rclib/include
+INCLUDE +=-I../lib/rclib/include
+LDSCRIPTS =../ldscripts/kernel_script.ld
+CFLAGS += -Wall
+LDFLAGS = -T $(LDSCRIPTS) -s -o
 LIB = ../lib/rclib/librc.a
 DIR := $(filter-out $(wildcard *.*) include ,$(wildcard *))
 SRC := $(wildcard $(foreach dir,$(DIR),$(dir)/*[.c|.s]) *.c *.s ../utils/*.c ../utils/*.s)
