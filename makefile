@@ -1,6 +1,7 @@
 include colors.inc
 
 TOPDIR =RTOS
+WORKINGDIR =$(shell pwd)
 BOOT_DIR =boot
 KERNEL_DIR =kernel
 LIB_DIR_RC =lib/rclib
@@ -14,7 +15,7 @@ OS :=RTOS_$(VERSION)
 
 include image-rules.inc
 
-export TOPDIR
+export TOPDIR WORKINGDIR
 
 debug: debug-compile build-img test
 build: RTOS

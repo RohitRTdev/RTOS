@@ -2,7 +2,7 @@ CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
 
-ACTIVEDIR :=$(subst $(HOME)/,,$(CURDIR))
+ACTIVEDIR :=$(TOPDIR)/$(subst $(WORKINGDIR)/,,$(CURDIR))
 LIB_HEADER =
 CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
 ASFLAGS =-c    

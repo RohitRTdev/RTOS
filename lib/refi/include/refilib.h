@@ -2,7 +2,7 @@
 #define _REFILIB_H_
 
 
-#include "refi/refi.h"
+#include <refi/refi.h>
 
 extern EFI_SYSTEM_TABLE *ST;
 extern EFI_BOOT_SERVICES *BS;
