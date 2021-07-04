@@ -17,6 +17,9 @@ include image-rules.inc
 
 export TOPDIR WORKINGDIR
 
+default: 
+	@echo "$(RED)Execute $(BOLD)make build$(END) $(RED)to get started$(END)"
+
 debug: debug-compile build-img test
 build: RTOS
 
