@@ -17,7 +17,7 @@ include image-rules.inc
 export TOPDIR
 
 debug: debug-compile build-img test
-build: RTOS build-img
+build: RTOS
 
 debug-compile:
 	$(OPERATE_KERNEL) build
