@@ -2,7 +2,7 @@ include ../../makefile.default
 
 TARGET =librefi.a
 include ../../update-rules.inc
-build: build-objects $(TARGET)
+build: $(TARGET) | build-objects
 
 $(TARGET): $(OBJS)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) library $(TARGET)$(END)"

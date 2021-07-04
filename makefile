@@ -19,26 +19,23 @@ debug: debug-compile build-img test
 build: RTOS build-img
 
 debug-compile:
-	$(OPERATE_LIB_RC)
-	$(OPERATE_LIB_EFI) 
-	$(OPERATE_BOOT) 
-	$(OPERATE_KERNEL) RTcore.rm
+	$(OPERATE_KERNEL) build
 
 RTOS:
 	@echo "$(RED)$(BOLD)Building rclib!$(END)"
-	$(OPERATE_LIB_RC) librc.a
+	$(OPERATE_LIB_RC) build
 	@echo "$(RED)$(BOLD)Building refilib!$(END)"
-	$(OPERATE_LIB_EFI) librefi.a
+	$(OPERATE_LIB_EFI) build
 	@echo "$(RED)$(BOLD)Building bootloader!$(END)"
-	$(OPERATE_BOOT) BOOTx64.EFI
+	$(OPERATE_BOOT) build
 	@echo "$(RED)$(BOLD)Building kernel!$(END)"
-	$(OPERATE_KERNEL) RTcore.rm
+	$(OPERATE_KERNEL) build
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
 	
 build-img: $(OS_IMG) 
 	
 $(OS_IMG): $(BOOT_IMAGE) $(RT_CORE)
-	@echo $(ECHO_FLAGS) "$(RED)Starting RTOS image build!"
+	@echo "$(RED)Starting RTOS image build!"
 	$(eval var := $(shell sudo losetup -f))
 	sudo losetup --offset 1048576 --sizelimit 52428800 $(var) $@
 	mkdir -p $(mount) 
@@ -50,7 +47,8 @@ $(OS_IMG): $(BOOT_IMAGE) $(RT_CORE)
 	sudo losetup -d $(var)
 	sudo umount $(mount)
 	rm -rf $(mount)
-	@echo $(ECHO_FLAGS) "$(GREEN)$(OS) image built successfully!"
+	@echo "$(GREEN)$(OS) image built successfully!"
+
 test:
 	@echo "$(YELLOW)Loading qemu emulator$(END)"
 	$(DEFAULT_TEST)
@@ -60,6 +58,6 @@ clean:
 	$(OPERATE_KERNEL) $@
 	$(OPERATE_LIB_RC) $@ 
 	$(OPERATE_LIB_EFI) $@ 
-	@echo $(RED)$(BOLD)Removed intermediate files$(END)"
+	@echo "$(RED)$(BOLD)Removed intermediate files$(END)"
 
 

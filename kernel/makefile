@@ -9,7 +9,7 @@ LIB = ../lib/rclib/librc.a
 TARGET =RTcore.rm
 include ../update-rules.inc
 
-build: build-objects $(TARGET)
+build: $(TARGET) | build-objects 
 
 $(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(TARGET)$(END)"

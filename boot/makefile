@@ -7,9 +7,9 @@ LIB = ../lib/refi/librefi.a
 TARGET =BOOTx64.EFI
 include ../update-rules.inc
 
-build: build-objects $(TARGET)
+build: $(TARGET) | build-objects 
 
 $(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) bootloader $(TARGET)$(END)"
-	@$(LD) $(LDFLAGS) $@ $^
+	@$(LD) $(LDFLAGS) $@ $(OBJS) $(LIB)
 
