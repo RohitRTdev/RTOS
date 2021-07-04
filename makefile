@@ -37,6 +37,7 @@ RTOS:
 	@$(OPERATE_KERNEL) build
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
 	
+#Used only for testing purposes(Do not call this option in make)	
 build-img: $(OS_IMG) 
 	
 $(OS_IMG): $(BOOT_IMAGE) $(RT_CORE)
