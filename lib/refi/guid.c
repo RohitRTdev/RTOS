@@ -1,4 +1,4 @@
-#include <refi/refilib.h>
+#include <refilib.h>
 
 BOOLEAN guid_check(EFI_GUID guid1, EFI_GUID guid2)
 {

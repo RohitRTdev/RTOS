@@ -18,5 +18,5 @@ FONT := $(RESC_DIR)/*.psf
 SYSFILES := SystemFiles
 
 define DEFAULT_TEST
-    $(TEST) -cpu $(CPU) -bios $(BIOS) -drive file=$(IMG),format=raw,if=ide
+    $(TEST) -cpu $(CPU) -bios $(BIOS) -drive file=$(OS_IMG),format=raw,if=ide
 endef

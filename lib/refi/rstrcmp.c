@@ -1,4 +1,4 @@
-#include <refi/refilib.h>
+#include <refilib.h>
 
 INT64 rstrcmp(char *str1, char *str2)
 {

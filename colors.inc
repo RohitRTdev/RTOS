@@ -18,3 +18,5 @@ ifeq ($(PRETTY_PRINT),DISABLE)
 	END :=
 	BOLD :=
 endif
+
+export RED BLUE END BOLD YELLOW GREEN CYAN

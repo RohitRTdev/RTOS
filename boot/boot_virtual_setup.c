@@ -1,5 +1,5 @@
 #include <boot/boot_virtual_setup.h>
-#include <refi/refilib.h>
+#include <refilib.h>
 
 static UINT8 max_virtual_address_width;
 

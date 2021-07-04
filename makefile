@@ -1,3 +1,5 @@
+include colors.inc
+
 TOPDIR =RTOS
 BOOT_DIR =boot
 KERNEL_DIR =kernel
@@ -10,8 +12,7 @@ OPERATE_LIB_EFI = cd $(LIB_DIR_EFI) && $(MAKE)
 VERSION :=1.0
 OS :=RTOS_$(VERSION)
 
-include makefile.img
-include colors.inc
+include image-rules.inc
 
 export TOPDIR
 
@@ -23,19 +24,19 @@ debug-compile:
 
 RTOS:
 	@echo "$(RED)$(BOLD)Building rclib!$(END)"
-	$(OPERATE_LIB_RC) build
+	@$(OPERATE_LIB_RC) build
 	@echo "$(RED)$(BOLD)Building refilib!$(END)"
-	$(OPERATE_LIB_EFI) build
+	@$(OPERATE_LIB_EFI) build
 	@echo "$(RED)$(BOLD)Building bootloader!$(END)"
-	$(OPERATE_BOOT) build
+	@$(OPERATE_BOOT) build
 	@echo "$(RED)$(BOLD)Building kernel!$(END)"
-	$(OPERATE_KERNEL) build
+	@$(OPERATE_KERNEL) build
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
 	
 build-img: $(OS_IMG) 
 	
 $(OS_IMG): $(BOOT_IMAGE) $(RT_CORE)
-	@echo "$(RED)Starting RTOS image build!"
+	@echo "$(RED)Starting RTOS image build!$(END)"
 	$(eval var := $(shell sudo losetup -f))
 	sudo losetup --offset 1048576 --sizelimit 52428800 $(var) $@
 	mkdir -p $(mount) 
@@ -54,10 +55,17 @@ test:
 	$(DEFAULT_TEST)
 
 clean:
-	$(OPERATE_BOOT) $@ 
-	$(OPERATE_KERNEL) $@
-	$(OPERATE_LIB_RC) $@ 
-	$(OPERATE_LIB_EFI) $@ 
-	@echo "$(RED)$(BOLD)Removed intermediate files$(END)"
+	@$(OPERATE_BOOT) $@ 
+	@$(OPERATE_KERNEL) $@
+	@$(OPERATE_LIB_RC) $@ 
+	@$(OPERATE_LIB_EFI) $@ 
+	@echo "$(GREEN)$(BOLD)Removed intermediate files$(END)"
+
+very-clean: 
+	@$(OPERATE_BOOT) $@ 
+	@$(OPERATE_KERNEL) $@
+	@$(OPERATE_LIB_RC) $@ 
+	@$(OPERATE_LIB_EFI) $@ 
+	@echo "$(GREEN)$(BOLD)Restored initial directory structure$(END)"
 
 

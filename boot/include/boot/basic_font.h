@@ -3,7 +3,7 @@
 
 
 #include <refi/refi.h>
-#include <refi/refilib.h>
+#include <refilib.h>
 #include "boot_structs.h"
 
 //PSF_1

@@ -1,4 +1,4 @@
-#include <refi/refilib.h>
+#include <refilib.h>
 
 EFI_STATUS EFI_clearscreen()
 {

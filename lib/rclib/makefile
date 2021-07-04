@@ -7,5 +7,5 @@ build: $(TARGET) | build-objects
 
 $(TARGET): $(OBJS)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) file $(TARGET)$(END)"
-	@ar $(LIB_FLAGS) $@ $(OBJS)		
+	@ar $(LIBFLAGS) $@ $(OBJS)		
 	

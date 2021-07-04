@@ -1,4 +1,4 @@
-#include <refi/refilib.h>
+#include <refilib.h>
 
 void wrstrcat(CHAR16 *dest, CHAR16 *src)
 {

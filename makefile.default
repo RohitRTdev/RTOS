@@ -1,29 +1,31 @@
-include colors.inc
-
 CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
 
 ACTIVEDIR :=$(subst $(HOME)/,,$(CURDIR))
-INCLUDE = -Iinclude/ $(LIB_HEADER)
+LIB_HEADER =
+CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
+ASFLAGS =-c    
+LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY)
+LIBFLAGS :=-rcs
 
-ifeq ($(ACTIVEDIR),$(TOPDIR)/kernel/)
-    LIB_HEADER :=-I../lib/rclib/include
+ifeq ($(ACTIVEDIR),$(TOPDIR)/kernel)
+    LIB_HEADER =-I../lib/rclib/include
     SUBSYSTEM :=0
     MODULE_ENTRY :=kernel_entry
-ifeq ($(ACTIVEDIR),$(TOPDIR)/boot/)
-    LIB_HEADER :=-I../lib/refi/include 
+	LDFLAGS +=-s
+endif
+ifeq ($(ACTIVEDIR),$(TOPDIR)/boot)
+    LIB_HEADER =-I../lib/refi/include 
     SUBSYSTEM :=10
     MODULE_ENTRY :=efi_main
-ifeq ($(ACTIVEDIR),$(TOPDIR)/lib/refi/)
-    LIB_HEADER :=-I../../boot/include/
-else
-	LIB_HEADER :=
+endif
+ifeq ($(ACTIVEDIR),$(TOPDIR)/lib/refi)
+    LIB_HEADER =-I../../boot/include/
 endif
 
-CFLAGS =-c -ffreestanding -mno-red-zone -fPIC $(INCLUDE)  
-LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY) -o
-LIBFLAGS :=-rcs
+LDFLAGS +=-o
+INCLUDE = -Iinclude/ $(LIB_HEADER)
 
 SRC := $(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
 COBJS := $(patsubst %.c, %.o, $(filter %.c, $(SRC))) #Create the list of .c object files
@@ -35,17 +37,22 @@ compile: $(COBJS)
 
 $(COBJS): %.o: %.c
 	@echo "$(GREEN)$(BOLD)Compiling$(END) $(GREEN)file $(ACTIVEDIR)/$<$(END)"
-    @$(CC) $(CFLAGS) $< -o $@
+	@$(CC) $(CFLAGS) $< -o $@
 
 #Default rule for assembling .s files
 assemble: $(SOBJS)
 
 $(SOBJS): %.o: %.s
 	@echo "$(YELLOW)$(BOLD)Assembling$(END) $(YELLOW)file $(ACTIVEDIR)/$<$(END)"
-    $(AS) $(CFLAGS) $< -o $@
+	@$(AS) $(ASFLAGS) $< -o $@
 
 build-objects: compile assemble
 
-.PHONY: clean
+.PHONY: clean very-clean
 clean:
-	rm -rf $(COBJS) $(SOBJS)
+	@echo "$(RED)$(BOLD)Deleting intermediate files in $(ACTIVEDIR)$(END)"
+	@rm -rf $(COBJS) $(SOBJS)
+
+very-clean: clean
+	@echo "$(RED)$(BOLD)Deleting $(TARGET)$(END)"
+	@rm -rf $(TARGET)

@@ -1,10 +1,11 @@
 #include <refi/refi.h>
-#include <refi/refilib.h>
+#include <refilib.h>
 #include <boot/primary_loader.h>
 #include <boot/basic_font.h>
 #include <boot/boot_structs.h>
 #include <boot/boot_virtual_setup.h>
 #include <boot/modules.h>
+#include <boot/boot_setup.h>
 
 
 boot_info boot_info_send;

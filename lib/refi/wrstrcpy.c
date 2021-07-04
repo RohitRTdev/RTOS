@@ -1,4 +1,4 @@
-#include <refi/refilib.h>
+#include <refilib.h>
 
 void wrstrcpy(CHAR16 *dest, CHAR16 *src)
 {

@@ -17,7 +17,7 @@ VOID* getACPI2_0table()
         return NULL;
 }
 
-static EFI_STATUS getMemMap(Map_descriptor *MemMap)
+EFI_STATUS getMemMap(Map_descriptor *MemMap)
 {
     EFI_STATUS status;
 
