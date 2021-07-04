@@ -1,20 +1,51 @@
+include colors.inc
+
 CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
 
-INCLUDE = -Iinclude/
-ifeq ($(CURDIR), kernel)
-    INCLUDE += -I$(LIB_HEADER)
-    SUBSYSTEM := 0
-    MODULE_ENTRY := kernel_entry
+ACTIVEDIR :=$(subst $(HOME)/,,$(CURDIR))
+INCLUDE = -Iinclude/ $(LIB_HEADER)
+
+ifeq ($(ACTIVEDIR),$(TOPDIR)/kernel/)
+    LIB_HEADER :=-I../lib/rclib/include
+    SUBSYSTEM :=0
+    MODULE_ENTRY :=kernel_entry
+ifeq ($(ACTIVEDIR),$(TOPDIR)/boot/)
+    LIB_HEADER :=-I../lib/refi/include 
+    SUBSYSTEM :=10
+    MODULE_ENTRY :=efi_main
+ifeq ($(ACTIVEDIR),$(TOPDIR)/lib/refi/)
+    LIB_HEADER :=-I../../boot/include/
 else
-    SUBSYSTEM := 10
-    MODULE_ENTRY := efi_main
+	LIB_HEADER :=
 endif
 
+CFLAGS =-c -ffreestanding -mno-red-zone -fPIC $(INCLUDE)  
+LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY) -o
+LIBFLAGS :=-rcs
 
-CFLAGS = -ffreestanding -mno-red-zone -fPIC $(INCLUDE)  
-LDFLAGS = -nostdlib --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY) -o
+SRC := $(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
+COBJS := $(patsubst %.c, %.o, $(filter %.c, $(SRC))) #Create the list of .c object files
+SOBJS := $(patsubst %.s, %.o, $(filter %.s, $(SRC))) #Create the list of .s object files
+OBJS := $(COBJS) $(SOBJS)
 
-SRC := $(filter-out include*/*.* $(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
-OBJS := $(patsubst %.s, %.o, $(patsubst %.c, %.o ,$(SRC))) #Create the list of object files
+#Default rule for compiling .c files
+compile: $(COBJS)
+
+$(COBJS): %.o: %.c
+	@echo "$(GREEN)$(BOLD)Compiling$(END) $(GREEN)file $(ACTIVEDIR)/$<$(END)"
+    @$(CC) $(CFLAGS) $< -o $@
+
+#Default rule for assembling .s files
+assemble: $(SOBJS)
+
+$(SOBJS): %.o: %.s
+	@echo "$(YELLOW)$(BOLD)Assembling$(END) $(YELLOW)file $(ACTIVEDIR)/$<$(END)"
+    $(AS) $(CFLAGS) $< -o $@
+
+build-objects: compile assemble
+
+.PHONY: clean
+clean:
+	rm -rf $(COBJS) $(SOBJS)

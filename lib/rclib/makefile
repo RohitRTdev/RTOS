@@ -1,13 +1,11 @@
 include ../../makefile.default
 
-CFLAGS = -mno-red-zone $(INCLUDE)
-SRC = $(wildcard *.c *.s */*.c */*.s)
-OBJS = $(patsubst %.s, %.o, $(patsubst %.c, %.o, $(SRC)))
+TARGET =librc.a
+include ../../update-rules.inc
 
-debug: 
+build: build-objects $(TARGET)
 
-librc.a: $(OBJS)
-	ar -rcs $@ $^		
+$(TARGET): $(OBJS)
+	@echo "$(BLUE)$(BOLD)$(UPDATE) file $(TARGET)$(END)"
+	@ar $(LIB_FLAGS) $@ $(OBJS)		
 	
-clean:
-	rm -rf $(OBJS)

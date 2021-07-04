@@ -1,13 +1,10 @@
-CC = x86_64-w64-mingw32-gcc
-AS = x86_64-w64-mingw32-as
-CFLAGS = -mno-red-zone -I../../boot/include/ 
-SRC = $(wildcard *.c)
-OBJS = $(patsubst %.c, %.o, $(SRC))
+include ../../makefile.default
 
-debug:
+TARGET =librefi.a
+include ../../update-rules.inc
+build: build-objects $(TARGET)
 
-librefi.a: $(OBJS)
-	ar -rcs $@ $(OBJS)
-		
-clean:
-	rm -rf $(OBJS)
+$(TARGET): $(OBJS)
+	@echo "$(BLUE)$(BOLD)$(UPDATE) library $(TARGET)$(END)"
+	@ar $(LIBFLAGS) $@ $(OBJS)
+	
