@@ -27,26 +27,20 @@ endif
 LDFLAGS +=-o
 INCLUDE = -Iinclude/ $(LIB_HEADER)
 
-SRC := $(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
-COBJS := $(patsubst %.c, %.o, $(filter %.c, $(SRC))) #Create the list of .c object files
-SOBJS := $(patsubst %.s, %.o, $(filter %.s, $(SRC))) #Create the list of .s object files
-OBJS := $(COBJS) $(SOBJS)
+SRC :=$(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
+OBJS :=$(patsubst %.c,%.o, $(patsubst %.s,%.o,$(SRC))) #Convert to .o files
 
 #Default rule for compiling .c files
-compile: $(COBJS)
-
-$(COBJS): %.o: %.c
+%.o: %.c
 	@echo "$(GREEN)$(BOLD)Compiling$(END) $(GREEN)file $(ACTIVEDIR)/$<$(END)"
 	@$(CC) $(CFLAGS) $< -o $@
 
 #Default rule for assembling .s files
-assemble: $(SOBJS)
-
-$(SOBJS): %.o: %.s
+%.o: %.s
 	@echo "$(YELLOW)$(BOLD)Assembling$(END) $(YELLOW)file $(ACTIVEDIR)/$<$(END)"
 	@$(AS) $(ASFLAGS) $< -o $@
 
-build-objects: compile assemble
+build-objects: $(OBJS)
 
 .PHONY: clean very-clean
 clean:

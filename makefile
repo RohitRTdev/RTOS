@@ -1,15 +1,15 @@
 include colors.inc
 
 TOPDIR =RTOS
-WORKINGDIR =$(shell pwd)
+WORKINGDIR =$(shell pwd)\
+MAKEFLAGSAVE =$(MAKEFLAGS)
+MAKEFLAGS +=--no-print-directory
 BOOT_DIR =boot
 KERNEL_DIR =kernel
 LIB_DIR_RC =lib/rclib
 LIB_DIR_EFI =lib/refi
 OPERATE_BOOT = cd $(BOOT_DIR) && $(MAKE)
 OPERATE_KERNEL = cd $(KERNEL_DIR) && $(MAKE)
-OPERATE_LIB_RC = cd $(LIB_DIR_RC) && $(MAKE)
-OPERATE_LIB_EFI = cd $(LIB_DIR_EFI) && $(MAKE)
 VERSION :=1.0
 OS :=RTOS_$(VERSION)
 
@@ -24,13 +24,9 @@ debug: debug-compile build-img test
 build: RTOS
 
 debug-compile:
-	$(OPERATE_KERNEL) build
+	$(OPERATE_KERNEL) build MAKEFLAGS=$(MAKEFLAGSAVE)
 
 RTOS:
-	@echo "$(RED)$(BOLD)Building rclib!$(END)"
-	@$(OPERATE_LIB_RC) build
-	@echo "$(RED)$(BOLD)Building refilib!$(END)"
-	@$(OPERATE_LIB_EFI) build
 	@echo "$(RED)$(BOLD)Building bootloader!$(END)"
 	@$(OPERATE_BOOT) build
 	@echo "$(RED)$(BOLD)Building kernel!$(END)"
