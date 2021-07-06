@@ -10,7 +10,7 @@ include ../update-rules.inc
 
 build: $(TARGET) 
 
-$(TARGET): build-objects $(LIB)
+$(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(TARGET)$(END)"
 	@$(LD) $(LDFLAGS) $@ $^
 

@@ -7,7 +7,6 @@
 #include <boot/modules.h>
 #include <boot/boot_setup.h>
 
-//hello
 boot_info boot_info_send;
 Map_descriptor MemMap;
 

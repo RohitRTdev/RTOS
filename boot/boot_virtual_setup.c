@@ -2,7 +2,6 @@
 #include <refilib.h>
 
 static UINT8 max_virtual_address_width;
-
 static void get_max_virtual_addr_width()
 {
     UINT32 address_code = 0;

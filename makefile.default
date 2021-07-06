@@ -1,5 +1,3 @@
-include depends.inc
-
 CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
@@ -38,22 +36,24 @@ INCLUDE = -Iinclude/ $(LIB_HEADER)
 SRC :=$(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
 DEPS :=$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
 OBJS :=$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRC))) #Convert to .o files
-DEPENDFILE =depends.inc
+DEPENDFILE :=depends.inc
+
+-include $(DEPENDFILE)
+
+default:
+	@echo hello
 
 #Create a dependency file which contains all the header file dependencies
-gen-dep: $(DEPENDFILE)
+gen-dep: $(DEPS)
 	@echo "$(CYAN)$(BOLD)Creating dependency file for $(ACTIVEDIR)$(END)"
 	@touch $^
-	@cat $(DEPS) > $^
+	@cat $(DEPS) > $(DEPENDFILE)
 	@rm -rf $(DEPS)
 
-$(DEPENDFILE): $(DEPS)
-
 #Default rule for generating dependency file
-
-$(DEPS): %.d: %.c
+%.d: %.c
 	@echo "$(CYAN)Generating $(BOLD)dependency$(END) $(CYAN)for file $(ACTIVEDIR)/$<$(END)"
-	@$(CC) $(INCLUDE) -M $< -MF $@
+	@$(CC) $(INCLUDE) -M $< -MF $@ -MT $*.o
 
 #Default rule for compiling .c files
 %.o: %.c
@@ -70,7 +70,7 @@ build-objects: $(OBJS)
 .PHONY: clean very-clean yes-go-gen-dep
 clean::
 	@echo "$(RED)$(BOLD)Deleting intermediate files in $(ACTIVEDIR)$(END)"
-	@rm -rf $(OBJS) $(DEPENDFILE)
+	@rm -rf $(OBJS) $(DEPENDFILE) $(DEPS)
 
 very-clean:: clean
 	@echo "$(RED)$(BOLD)Deleting $(TARGET)$(END)"

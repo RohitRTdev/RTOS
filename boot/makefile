@@ -11,9 +11,9 @@ include ../update-rules.inc
 
 build: $(TARGET)
 
-$(TARGET): build-objects $(LIB)
+$(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) bootloader $(TARGET)$(END)"
-	@$(LD) $(LDFLAGS) $@ $(OBJS) $(LIB)
+	@$(LD) $(LDFLAGS) $@ $^
 
 $(LIB): $(SUBDEPENDENCY) 
 	@cd $(LIBPATH) && $(MAKE) $(GENCMD) build

@@ -4,13 +4,11 @@
 #include <refi/refi.h>
 #include "primary_loader.h"
 
-//boot structs
 #define STACK_SIZE 10*PAGESIZE 
 #define RT_STACK 0x80000000
 #define RT_MODULE 0x80000001
 #define RT_MAP 0x80000002
 #define RT_RCS 0x80000003
-
 
 typedef struct{
     UINT8* basic_font_base;
