@@ -9,11 +9,17 @@ LIB =$(LIBPATH)/librefi.a
 TARGET =BOOTx64.EFI
 include ../update-rules.inc
 
-build: $(TARGET) | build-objects 
+build: $(TARGET)
 
-$(TARGET): $(OBJS) $(LIB)
+$(TARGET): build-objects $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) bootloader $(TARGET)$(END)"
 	@$(LD) $(LDFLAGS) $@ $(OBJS) $(LIB)
 
-$(LIB): 
-	cd $(LIBPATH) && $(MAKE) build
+$(LIB): $(SUBDEPENDENCY) 
+	@cd $(LIBPATH) && $(MAKE) $(GENCMD) build
+
+clean::
+	@cd $(LIBPATH) && $(MAKE) clean
+
+very-clean::
+	@cd $(LIBPATH) &&$(MAKE) very-clean

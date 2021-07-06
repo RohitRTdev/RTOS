@@ -1,36 +1,39 @@
 include colors.inc
 
 TOPDIR =RTOS
-WORKINGDIR =$(shell pwd)\
+WORKINGDIR =$(shell pwd)
 MAKEFLAGSAVE =$(MAKEFLAGS)
 MAKEFLAGS +=--no-print-directory
 BOOT_DIR =boot
 KERNEL_DIR =kernel
-LIB_DIR_RC =lib/rclib
-LIB_DIR_EFI =lib/refi
 OPERATE_BOOT = cd $(BOOT_DIR) && $(MAKE)
 OPERATE_KERNEL = cd $(KERNEL_DIR) && $(MAKE)
 VERSION :=1.0
 OS :=RTOS_$(VERSION)
 
+DEBUGTARGET :=$(BOOT_DIR)
+GENCMD := $(findstring gen-dep,$(MAKECMDGOALS))
 include image-rules.inc
 
-export TOPDIR WORKINGDIR
+export TOPDIR WORKINGDIR GENCMD
 
+
+.PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep
 default: 
 	@echo "$(RED)Execute $(BOLD)make build$(END) $(RED)to get started$(END)"
 
-debug: debug-compile build-img test
+debug: debug-compile
 build: RTOS
 
 debug-compile:
-	$(OPERATE_KERNEL) build MAKEFLAGS=$(MAKEFLAGSAVE)
+	@echo "$(RED)$(BOLD)Starting Debugging for $(DEBUGTARGET)$(END)"
+	@cd $(DEBUGTARGET) && $(MAKE) $(GENCMD) build MAKEFLAGS=$(MAKEFLAGSAVE) 
 
 RTOS:
 	@echo "$(RED)$(BOLD)Building bootloader!$(END)"
-	@$(OPERATE_BOOT) build
+	@$(OPERATE_BOOT) gen-dep build GENCMD=gen-dep
 	@echo "$(RED)$(BOLD)Building kernel!$(END)"
-	@$(OPERATE_KERNEL) build
+	@$(OPERATE_KERNEL) gen-dep build GENCMD=gen-dep
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
 	
 #Used only for testing purposes(Do not call this option in make)	
@@ -58,15 +61,11 @@ test:
 clean:
 	@$(OPERATE_BOOT) $@ 
 	@$(OPERATE_KERNEL) $@
-	@$(OPERATE_LIB_RC) $@ 
-	@$(OPERATE_LIB_EFI) $@ 
 	@echo "$(GREEN)$(BOLD)Removed intermediate files$(END)"
 
 very-clean: 
 	@$(OPERATE_BOOT) $@ 
 	@$(OPERATE_KERNEL) $@
-	@$(OPERATE_LIB_RC) $@ 
-	@$(OPERATE_LIB_EFI) $@ 
 	@echo "$(GREEN)$(BOLD)Restored initial directory structure$(END)"
 
 

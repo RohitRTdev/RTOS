@@ -1,3 +1,5 @@
+include depends.inc
+
 CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
@@ -8,6 +10,12 @@ CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
 ASFLAGS =-c    
 LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY)
 LIBFLAGS :=-rcs
+
+ifeq ($(GENCMD),gen-dep)
+	SUBDEPENDENCY =yes-go-gen-dep
+else
+	SUBDEPENDENCY =
+endif
 
 ifeq ($(ACTIVEDIR),$(TOPDIR)/kernel)
     LIB_HEADER =-I../lib/rclib/include
@@ -28,7 +36,24 @@ LDFLAGS +=-o
 INCLUDE = -Iinclude/ $(LIB_HEADER)
 
 SRC :=$(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
-OBJS :=$(patsubst %.c,%.o, $(patsubst %.s,%.o,$(SRC))) #Convert to .o files
+DEPS :=$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
+OBJS :=$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRC))) #Convert to .o files
+DEPENDFILE =depends.inc
+
+#Create a dependency file which contains all the header file dependencies
+gen-dep: $(DEPENDFILE)
+	@echo "$(CYAN)$(BOLD)Creating dependency file for $(ACTIVEDIR)$(END)"
+	@touch $^
+	@cat $(DEPS) > $^
+	@rm -rf $(DEPS)
+
+$(DEPENDFILE): $(DEPS)
+
+#Default rule for generating dependency file
+
+$(DEPS): %.d: %.c
+	@echo "$(CYAN)Generating $(BOLD)dependency$(END) $(CYAN)for file $(ACTIVEDIR)/$<$(END)"
+	@$(CC) $(INCLUDE) -M $< -MF $@
 
 #Default rule for compiling .c files
 %.o: %.c
@@ -42,11 +67,11 @@ OBJS :=$(patsubst %.c,%.o, $(patsubst %.s,%.o,$(SRC))) #Convert to .o files
 
 build-objects: $(OBJS)
 
-.PHONY: clean very-clean
-clean:
+.PHONY: clean very-clean yes-go-gen-dep
+clean::
 	@echo "$(RED)$(BOLD)Deleting intermediate files in $(ACTIVEDIR)$(END)"
-	@rm -rf $(COBJS) $(SOBJS)
+	@rm -rf $(OBJS) $(DEPENDFILE)
 
-very-clean: clean
+very-clean:: clean
 	@echo "$(RED)$(BOLD)Deleting $(TARGET)$(END)"
 	@rm -rf $(TARGET)

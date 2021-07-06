@@ -4,7 +4,7 @@
 #include <refi/refi.h>
 #include "primary_loader.h"
 
-
+//boot structs
 #define STACK_SIZE 10*PAGESIZE 
 #define RT_STACK 0x80000000
 #define RT_MODULE 0x80000001

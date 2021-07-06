@@ -8,11 +8,17 @@ LIB =$(LIBPATH)/librc.a
 TARGET =RTcore.rm
 include ../update-rules.inc
 
-build: $(TARGET) | build-objects 
+build: $(TARGET) 
 
-$(TARGET): $(OBJS) $(LIB)
+$(TARGET): build-objects $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(TARGET)$(END)"
 	@$(LD) $(LDFLAGS) $@ $^
 
-$(LIB):
-	cd $(LIBPATH) && $(MAKE) build
+$(LIB): $(SUBDEPENDENCY)
+	@cd $(LIBPATH) && $(MAKE) $(GENCMD) build 
+
+clean::
+	@cd $(LIBPATH) && $(MAKE) clean
+
+very-clean::
+	@cd $(LIBPATH) &&$(MAKE) very-clean
