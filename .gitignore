@@ -1,4 +1,4 @@
-resources
+*.iso
 .vscode
 *.rm
 *.a

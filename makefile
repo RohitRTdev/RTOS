@@ -58,7 +58,7 @@ build-img: $(OS_IMG)
 $(OS_IMG): $(BOOT_IMAGE) $(RT_CORE)
 	@echo "$(RED)Starting RTOS image build!$(END)"
 	$(eval var := $(shell sudo losetup -f))
-	sudo losetup --offset 1048576 --sizelimit 52428800 $(var) $@
+	sudo losetup --offset 1048576 --sizelimit 104857600 $(var) $@
 	mkdir -p $(mount) 
 	sudo mount $(var) $(mount)
 	sudo mkdir -p $(mount_dir)
