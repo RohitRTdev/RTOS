@@ -1,7 +1,7 @@
 include ../../makefile.default
 
 TARGET =librefi.a
-include ../../update-rules.inc
+include ../../make-rules/update-rules.inc
 build: $(TARGET)
 
 $(TARGET): $(OBJS)

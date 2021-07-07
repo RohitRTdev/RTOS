@@ -1,12 +1,13 @@
 include ../makefile.default
 
 #kernel compilation flags
+SRC +=$(wildcard ../utils/*.c ../utils/*.s)
 LDSCRIPTS =../ldscripts/kernel_script.ld
 CFLAGS += -Wall
 LIBPATH :=../lib/rclib
 LIB =$(LIBPATH)/librc.a 
 TARGET =RTcore.rm
-include ../update-rules.inc
+include ../make-rules/update-rules.inc
 
 build: $(TARGET) 
 
@@ -15,7 +16,7 @@ $(TARGET): $(OBJS) $(LIB)
 	@$(LD) $(LDFLAGS) $@ $^
 
 $(LIB): $(SUBDEPENDENCY)
-	@cd $(LIBPATH) && $(MAKE) $(GENCMD) build 
+	@cd $(LIBPATH) && $(MAKE) $(GENCMD) $(BUILD) 
 
 clean::
 	@cd $(LIBPATH) && $(MAKE) clean

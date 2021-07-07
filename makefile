@@ -1,4 +1,4 @@
-include colors.inc
+include make-rules/colors.inc
 
 TOPDIR =RTOS
 WORKINGDIR =$(shell pwd)
@@ -13,21 +13,37 @@ OS :=RTOS_$(VERSION)
 
 DEBUGTARGET :=$(BOOT_DIR)
 GENCMD := $(findstring gen-dep,$(MAKECMDGOALS))
-include image-rules.inc
+DEBUGMODE :=NORMAL
+INVALID :=
 
-export TOPDIR WORKINGDIR GENCMD
+include make-rules/image-rules.inc
 
+export TOPDIR WORKINGDIR GENCMD INVALIDOPTION
+
+
+#Catch environment errors
+ifeq ($(findstring debug,$(MAKECMDGOALS)),)
+	GENDEP_MESSAGE :=@echo "$(RED)Do not call this method directly. Use $(BOLD)make debug gen-dep$(END)$(RED) or $(BOLD)make build$(END)"
+else
+	GENDEP_MESSAGE :=@echo "$(GREEN)$(BOLD)Generated all dependency files$(END)"
+endif
+
+ifeq ($(findstring $(DEBUGMODE),NORMAL COMPLETE),)
+$(error DEBUGMODE=$(DEBUGMODE) is an invalid option)
+endif
 
 .PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep
 default: 
 	@echo "$(RED)Execute $(BOLD)make build$(END) $(RED)to get started$(END)"
 
+
+#Use make debug to only work with the DEBUGTARGET
 debug: debug-compile
 build: RTOS
 
 debug-compile:
 	@echo "$(RED)$(BOLD)Starting Debugging for $(DEBUGTARGET)$(END)"
-	@cd $(DEBUGTARGET) && $(MAKE) $(GENCMD) build MAKEFLAGS=$(MAKEFLAGSAVE) 
+	@cd $(DEBUGTARGET) && $(MAKE) $(GENCMD) build MAKEFLAGS=$(MAKEFLAGSAVE) DEBUGMODE=$(DEBUGMODE)
 
 RTOS:
 	@echo "$(RED)$(BOLD)Building bootloader!$(END)"
@@ -68,4 +84,5 @@ very-clean:
 	@$(OPERATE_KERNEL) $@
 	@echo "$(GREEN)$(BOLD)Restored initial directory structure$(END)"
 
-
+gen-dep:
+	$(GENDEP_MESSAGE)	

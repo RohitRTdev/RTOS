@@ -8,12 +8,24 @@ CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
 ASFLAGS =-c    
 LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY)
 LIBFLAGS :=-rcs
+BUILD :=build
 
 ifeq ($(GENCMD),gen-dep)
 	SUBDEPENDENCY =yes-go-gen-dep
 else
 	SUBDEPENDENCY =
 endif
+
+ifeq ($(DEBUGMODE),NORMAL)
+	SUBDEPENDENCY =
+	BUILD :=
+endif
+
+ifeq ($(DEBUGMODE),COMPLETE)
+	SUBDEPENDENCY =yes-go-gen-dep
+	BUILD :=build
+endif
+
 
 ifeq ($(ACTIVEDIR),$(TOPDIR)/kernel)
     LIB_HEADER =-I../lib/rclib/include
@@ -33,15 +45,15 @@ endif
 LDFLAGS +=-o
 INCLUDE = -Iinclude/ $(LIB_HEADER)
 
-SRC :=$(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
-DEPS :=$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
-OBJS :=$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRC))) #Convert to .o files
+SRC =$(filter-out include*/*.*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
+DEPS =$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
+OBJS =$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRC))) #Convert to .o files
 DEPENDFILE :=depends.inc
 
--include $(DEPENDFILE)
-
 default:
-	@echo hello
+	@echo "$(RED)$(BOLD)Please execute a command from the top makefile$(END)"
+
+-include $(DEPENDFILE)
 
 #Create a dependency file which contains all the header file dependencies
 gen-dep: $(DEPS)

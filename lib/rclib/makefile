@@ -1,7 +1,7 @@
 include ../../makefile.default
 
 TARGET =librc.a
-include ../../update-rules.inc
+include ../../make-rules/update-rules.inc
 
 build: $(TARGET)
 

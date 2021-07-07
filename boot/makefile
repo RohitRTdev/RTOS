@@ -7,7 +7,7 @@ LIB =$(LIBPATH)/librefi.a
 
 
 TARGET =BOOTx64.EFI
-include ../update-rules.inc
+include ../make-rules/update-rules.inc
 
 build: $(TARGET)
 
@@ -16,7 +16,7 @@ $(TARGET): $(OBJS) $(LIB)
 	@$(LD) $(LDFLAGS) $@ $^
 
 $(LIB): $(SUBDEPENDENCY) 
-	@cd $(LIBPATH) && $(MAKE) $(GENCMD) build
+	@cd $(LIBPATH) && $(MAKE) $(GENCMD) $(BUILD)
 
 clean::
 	@cd $(LIBPATH) && $(MAKE) clean
