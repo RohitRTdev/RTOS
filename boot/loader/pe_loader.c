@@ -5,6 +5,7 @@
 
 #include <boot/pe.h>
 #include <boot/primary_loader.h>
+#include <boot/file-io.h>
 
 static void pe_load_section(EFI_FILE_PROTOCOL *file_buf, UINT64 size, Section_header section, UINT8 *load_address)
 {
@@ -100,7 +101,7 @@ static BOOLEAN pe_verify(EFI_FILE_PROTOCOL *file_buf)
     return TRUE;
 }
 
-static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
+static EFI_STATUS pe_load(EFI_FILE_PROTOCOL *file_buf)
 {
     EFI_STATUS status;
     BOOLEAN load_verify = FALSE;
@@ -138,7 +139,7 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
 
     //Allocate suitable amount of pages to load requested file
     status = BS->AllocatePages(AllocateAnyPages, EfiLoaderData, pages, (EFI_PHYSICAL_ADDRESS*)&load_address);
-    EFI_FATAL_REPORT(L"Memory is insufficient to load kernel", status);
+    EFI_FATAL_REPORT(L"Memory is insufficient to load kernel module", status);
 
     buf_size = sizeof(section);
     cur_address = load_address;    
@@ -180,9 +181,6 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
     }
 
     UINT8 *entry_point = load_address + (pe_opt_hdr.AddressOfEntryPoint - pe_opt_hdr.BaseOfCode);
-    image->entry_point = entry_point;
-    image->base = load_address;
-    image->pages = pages;
 
     if(!text_sect)
     {
@@ -190,70 +188,26 @@ static UINT8* pe_load(EFI_FILE_PROTOCOL *file_buf, Image_data *image)
         printEFI(L"Cannot continue execution\r\n");
         while(1){}
     }    
-    return entry_point;
     
 }
-EFI_FILE_PROTOCOL* openfile(EFI_HANDLE deviceHandle, CHAR16 *filepath)
+
+
+
+
+
+EFI_STATUS pe_loadfile(EFI_HANDLE image_handle, CHAR16* file_path)
 {
-    EFI_STATUS status;
-    EFI_GUID simple_fs_guid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *simple_fs = NULL;
-    EFI_FILE_PROTOCOL *root = NULL;
-    EFI_FILE_PROTOCOL *file_handle = NULL;
-
-    //Get simple filesystem protocol for the device handle
-    status = BS->HandleProtocol(deviceHandle, &simple_fs_guid, (void**)&simple_fs);
-    EFI_FATAL_REPORT(L"Filesystem Handle locate error!", status);
-
-    //Access root directory of device of file I/O
-    status = simple_fs->OpenVolume(simple_fs, (EFI_FILE_PROTOCOL**)&root);
-    EFI_FATAL_REPORT(L"Could not open root directory", status);
-
-    //Open the requested file 
-    status = root->Open(root, (EFI_FILE_PROTOCOL**)&file_handle, filepath, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
-    if(EFI_ERROR(status))
-    {
-        printEFI(L"Fatal error!\r\n");
-        printEFI(L"Could not load requested file at path %s\r\n", filepath);
-        printEFI(L"Cannot continue execution!\r\n");
-        while(1){}
-    }
-
-    return file_handle;
-
-}
-
-EFI_HANDLE file_init(EFI_HANDLE ImageHandle)
-{
-    EFI_STATUS status;
-    EFI_GUID load_img_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-    EFI_LOADED_IMAGE_PROTOCOL *load_img_prot = NULL;
-
-    //Get the loaded image protocol for ImageHandle
-    status = BS->HandleProtocol(ImageHandle, &load_img_guid, (void**)&load_img_prot);    
-    EFI_FATAL_REPORT(L"Load image protocol error", status);
-
-    //Get the image's device handle (Please note that this is not the same as ImageHandle)
-    EFI_HANDLE deviceHandle = load_img_prot->DeviceHandle;
-
-    return deviceHandle;
-}
-
-
-
-UINT8* pe_loadfile(EFI_HANDLE ImageHandle, CHAR16* filepath, Image_data *image)
-{
-    UINT8 *entry = NULL;
     EFI_HANDLE main_handle;
     EFI_FILE_PROTOCOL *kernel_buf = NULL;
+    EFI_STATUS kernel_module_load_status = EFI_SUCCESS;
 
-    main_handle = file_init(ImageHandle);  //Load the device handle
+    main_handle = file_init(image_handle);  //Load the device handle
 
-    kernel_buf = openfile(main_handle, filepath);  //Get file handle to kernel 
+    kernel_buf = openfile(main_handle, file_path);  //Get file handle to kernel 
     
-    entry = pe_load(kernel_buf, image);   //Load kernel and get image data
+    kernel_module_load_status = pe_load(kernel_buf);   //Load kernel module
 
     kernel_buf->Close(kernel_buf); //Close kernel file handle
 
-    return entry;
+    return kernel_module_load_status;
 }

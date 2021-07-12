@@ -3,16 +3,7 @@
 
 #include <refi/refi.h>
 
-typedef struct{
-    UINT8 *entry_point;
-    UINT8 *base;
-    UINT64 pages;
-}Image_data;
-
-
 UINT64 round_4k(UINT64 value);  // Returns no.of pages
-UINT8* pe_loadfile(EFI_HANDLE ImageHandle, CHAR16* filepath, Image_data *image);
-EFI_FILE_PROTOCOL* openfile(EFI_HANDLE deviceHandle, CHAR16 *filepath);
-EFI_HANDLE file_init(EFI_HANDLE ImageHandle);
+EFI_STATUS pe_loadfile(EFI_HANDLE image_handle, CHAR16* file_path);
 
 #endif

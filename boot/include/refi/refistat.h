@@ -54,6 +54,7 @@
 #define EFI_WARN_WRITE_FAILURE          EFIWARN(3)
 
 
-#define KERNEL_EFI_ERROR                stat_set(50)
+#define KERNEL_LOAD_ERROR                stat_set(50)
+#define FONT_NOT_SUPPORTED               stat_set(51)
 
 #endif
