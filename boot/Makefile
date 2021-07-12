@@ -24,5 +24,5 @@ clean::
 	@cd $(LIBGPATH) && $(MAKE) clean
 
 very-clean::
-	@cd $(LIBPATH) && $(MAKE) very-clean
+	@cd $(LIBREFIPATH) && $(MAKE) very-clean
 	@cd $(LIBGPATH) && $(MAKE) very-clean
