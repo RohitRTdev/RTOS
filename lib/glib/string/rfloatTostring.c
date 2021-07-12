@@ -1,6 +1,6 @@
 #include <glib/rstrings.h>
 
-void rfloatTostring(double value, char *str, u8 precision) 
+void rfloatTostring(double value, char *str, uint8_t precision) 
 {
     char new_str[MAXCHARCOUNT] = "";
     if(value < 0)
@@ -8,7 +8,7 @@ void rfloatTostring(double value, char *str, u8 precision)
         rstrcpy(new_str, "-");
         value = -1 * value;
     }
-    u64 int_value = (u64)value; //Initial integer extraction
+    uint64_t int_value = (uint64_t)value; //Initial integer extraction
     
     
     rtostring(int_value, str);
@@ -23,7 +23,7 @@ void rfloatTostring(double value, char *str, u8 precision)
     while(precision > 0)
     {
         value *= 10;
-        int_value = (u64)value;
+        int_value = (uint64_t)value;
         rtostring(int_value, ch);
         rstrcat(new_str, ch);
         value = value - int_value;

@@ -1,17 +1,17 @@
 #ifndef _R_COMMON_H_
 #define _R_COMMON_H_
 
-#include "glib-types.h"
+#include <rtos/rtypes.h>
 
-u64 ralign(u64 value, u64 boundary);
-u64 ralign_op(u64 val, u64 alignment);
-bool alignmentcheck(st alignment);
+uint64_t ralign(uint64_t value, uint64_t boundary);
+uint64_t ralign_op(uint64_t val, uint64_t alignment);
+boolean alignmentcheck(size_t alignment);
 
-void swap(st *address_1, st* address_2, st swap_size);
-void swap_op8(st *address_1, st *address_2);
-void swap_op(st *address_1, st *address_2);
+void swap(size_t *address_1, size_t* address_2, size_t swap_size);
+void swap_op8(size_t *address_1, size_t *address_2);
+void swap_op(size_t *address_1, size_t *address_2);
 
-void quick_sort(void *list, st list_size, void *mem_address, st struct_size);
+void quick_sort(void *lisize_t, size_t lisize_t_size, void *mem_address, size_t size_truct_size);
 
 
 #endif

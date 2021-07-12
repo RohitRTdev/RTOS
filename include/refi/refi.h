@@ -5,6 +5,7 @@
 
 /*Please note that the included library is barely a library and is highly specific.
 Make sure to use a mingw compiler to get this to compile correctly */
+#include <rtos/defs.h>
 #include "reficheck.h"
 #include "refidefs.h"
 #include "refienum.h"

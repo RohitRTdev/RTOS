@@ -1,5 +1,5 @@
 #include <refi/refi.h>
-#include <refilib.h>
+#include <refilib/refilib.h>
 #include <boot/primary_loader.h>
 #include <boot/psf_font.h>
 #include <boot/boot_structs.h>
@@ -8,10 +8,8 @@
 #include <boot/boot_setup.h>
 
 boot_time_modules boot_time_loaded_modules[] = {{STACK, NULL, "kernel_stack"},
-
-                                                        {KERNEL,L"\\Modules\\RTcore.rm","RTcore"},
-
-                                                        {FONT,L"\\Modules\\RTcore.rm","DefaultPSFfont"}};
+                                                {KERNEL,L"\\Modules\\RTcore.rm","RTcore"},
+                                                {FONT,L"\\Modules\\RTcore.rm","DefaultPSFfont"}};
 
 boot_info boot_info_send;
 Map_descriptor MemMap;

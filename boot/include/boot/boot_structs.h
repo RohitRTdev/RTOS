@@ -2,7 +2,7 @@
 #define _BOOT_STRUCTS_H_
 
 #include <refi/refi.h>
-#include "primary_loader.h"
+#include <boot/primary_loader.h>
 
 #define STACK_SIZE 10*PAGESIZE 
 #define RT_STACK 0x80000000

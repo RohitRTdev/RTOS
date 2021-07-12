@@ -1,8 +1,8 @@
 #include <glib/rcommon.h>
 
-u64 ralign(u64 value, u64 boundary)
+uint64_t ralign(uint64_t value, uint64_t boundary)
 {
-    u64 res;
+    uint64_t res;
     if(value % boundary != 0)
         res = (value/boundary + 1) * boundary;
     else

@@ -1,8 +1,8 @@
 #include <glib/rstrings.h>
 
-u64 rstrlen(char *str)
+uint64_t rstrlen(char *str)
 {
-    u64 length = 0;
+    uint64_t length = 0;
     while(str[length] != '\0')
     {
         length++;

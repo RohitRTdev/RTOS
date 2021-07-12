@@ -1,9 +1,9 @@
 #include <glib/rmemory.h>
 
 
-void* rmemset(void *block, i8 c, st n)
+void* rmemset(void *block, int8_t c, size_t n)
 {
-    st i = 0;
+    size_t i = 0;
     while(i < n)
     {
         *BYTE_CAST(block + i++) = c;

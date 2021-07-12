@@ -1,12 +1,12 @@
 #include <glib/rcommon.h>
 
-bool alignmentcheck(st alignment)
+boolean alignmentcheck(size_t alignment)
 {
-    st count = 0;
-    bool bit_check = false;
+    size_t count = 0;
+    boolean bit_check = false;
     while(count < 64)
     {
-        if(alignment & ((st)1 << count))
+        if(alignment & ((size_t)1 << count))
         {
             if(!bit_check)
             {

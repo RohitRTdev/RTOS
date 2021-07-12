@@ -3,7 +3,7 @@ AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
 
 ACTIVEDIR :=$(TOPDIR)/$(subst $(WORKINGDIR)/,,$(CURDIR))
-INCLUDE = -Iinclude/ $(LIB_HEADER)
+INCLUDE = -I$(WORKINGDIR)/include/ -I$(CURDIR)/include/ $(LIB_HEADER)
 LIBHEADER =-I$(WORKINGDIR)/lib/glib/
 CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
 ASFLAGS =-c    

@@ -40,8 +40,9 @@ typedef short int int16_t;
 typedef unsigned short int uint16_t;
 typedef int int32_t;
 typedef unsigned int uint32_t;
-typedef long long int64_t;  
-typedef unsigned long long uint64_t;
+typedef long long int int64_t;  
+typedef unsigned long long int uint64_t;
+typedef uint16_t wchar_t;
 
 typedef int8_t INT8;
 typedef uint8_t UINT8;
@@ -51,28 +52,14 @@ typedef int32_t INT32;
 typedef uint32_t UINT32;
 typedef int64_t INT64;
 typedef uint64_t UINT64;
+typedef UINT64 UINTN;
+typedef INT64 INTN;
 
 typedef UINT8 CHAR8;
 typedef UINT16 CHAR16;
 
 typedef void VOID;
 typedef UINT8 BOOLEAN;
-
-#ifdef _SIZE_MACHINE_4_
-typedef INT32 INTN;
-typedef UINT32 UINTN;
-#endif
-#ifdef _SIZE_MACHINE_8_
-typedef INT64 INTN;
-typedef UINT64 UINTN;
-#endif
-#ifndef _SIZE_MACHINE_4_
-#ifndef _SIZE_MACHINE_8_ 
-typedef INT64 INTN;
-typedef UINT64 UINTN;
-#endif
-#endif
-
 
 typedef VOID *EFI_HANDLE;
 typedef UINTN EFI_STATUS;
@@ -92,11 +79,6 @@ typedef struct {
 
 #define TRUE ((BOOLEAN)1)
 #define FALSE ((BOOLEAN)0)
-
-#define PAGESIZE 4096
-#define page(num) PAGESIZE*4096
-
-typedef CHAR16 wchar_t;
 
 
 #endif 

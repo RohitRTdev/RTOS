@@ -1,11 +1,11 @@
 #include <glib/rstrings.h>
 
-u64 wrstrlen(wchar *str)
+uint64_t wrstrlen(wchar_t *str)
 {
-    u64 length = 0;
-    while(str[length] != '\0')
+    uint64_t length = 0;
+    while(str[length] != L'\0') /*Since UNICODE is 2bytes */
     {
-        length++;
+        length++; 
     }
     return length;
 }

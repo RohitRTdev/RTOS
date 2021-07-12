@@ -1,8 +1,8 @@
 #include <glib/rstrings.h>
 
-i8 rtoint(char ch)
+int8_t rtoint(char ch)
 {
-    i8 value;
+    int8_t value;
     if(risdigit(ch))
     {
         value = ch - 48;

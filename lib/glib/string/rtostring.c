@@ -1,15 +1,15 @@
 #include <glib/rstrings.h>
 
-void rtostring(u64 value, char *outstr)
+void rtostring(uint64_t value, char *outstr)
 {
-    u64 sample = value;
+    uint64_t sample = value;
     if(sample == 0)
     { 
         outstr[0] = '0';
         outstr[1] = '\0';}
     else
     {
-        u64 i = 0,j = 0;
+        uint64_t i = 0,j = 0;
         char outrev[MAXCHARCOUNT];
         while(sample > 0)
         {

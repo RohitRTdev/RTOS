@@ -1,6 +1,6 @@
 #include <glib/rstrings.h>
 
-bool risdigit(char ch)
+boolean risdigit(char ch)
 {
     if(ch >= '0' && ch <= '9')
         return true;

@@ -1,8 +1,8 @@
 #include <glib/rstrings.h>
 
-i64 rstrcmp(char *str1, char *str2)
+int64_t rstrcmp(char *str1, char *str2)
 {
-    i64 length = 0, str1Length = rstrlen(str1), str2Length = rstrlen(str2);
+    int64_t length = 0, str1Length = rstrlen(str1), str2Length = rstrlen(str2);
     while(str1[length] == str2[length] && !(str1[length] == '\0' ||str2[length] == '\0'))
     {
         length++;

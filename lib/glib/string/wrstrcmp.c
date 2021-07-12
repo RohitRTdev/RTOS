@@ -1,9 +1,9 @@
 #include <glib/rstrings.h>
 
-i64 wrstrcmp(wchar *str1, wchar *str2)
+int64_t wrstrcmp(wchar_t *str1, wchar_t *str2)
 {
-    u64 length = 0, str1Length = rstrlen(str1) - 1, str2Length = rstrlen(str2) - 1;
-    while(str1[length] == str2[length] && !(str1[length] == '\0' ||str2[length] == '\0'))
+    uint64_t length = 0, str1Length = wrstrlen(str1) - 1, str2Length = wrstrlen(str2) - 1;
+    while(str1[length] == str2[length] && !(str1[length] == L'\0' ||str2[length] == L'\0'))
     {
         length++;
     }

@@ -3,20 +3,6 @@
 
 #include "refiapi.h"
 
-
-/*  Use this macro to get the next memory map descriptor
-    Ex: To get the PhysicalStart field of 5th descriptor>>
-
-    getMapDescriptor(Map, DescSize, 5)->PhysicalStart; (This will return the correct value)
-    
-    Don't get descriptor directly or it will cause compatibility problems
-    Ex: (Map + 5)->PhysicalStart (Don't use)
-
-    In the above example, Map is of type EFI_MEMORY_DESCRIPTOR* and DescSize is 
-    the size of a descriptor that is returned by GetMemoryMap function
-*/
-#define getMapDescriptor(ptr, size, pos) ((EFI_MEMORY_DESCRIPTOR*)((UINT8*)ptr + size*pos))  
-
 typedef struct _EFI_TABLE_HEADER{
     UINT64 Signature;
     UINT32 Revision;

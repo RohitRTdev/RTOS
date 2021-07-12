@@ -3,8 +3,8 @@
 
 
 #include <refi/refi.h>
-#include <refilib.h>
-#include "boot_structs.h"
+#include <refilib/refilib.h>
+#include <boot/boot_structs.h>
 
 //PSF_1
 #define PSF1_MAGIC0     0x36

@@ -1,9 +1,9 @@
 #include <glib/rmemory.h>
 
 
-i8 rmemcmp(const void *block1, const void *block2, st n)
+int8_t rmemcmp(const void *block1, const void *block2, size_t n)
 {
-    st i = 0;
+    size_t i = 0;
     while(i < n)
     {
         if(*BYTE_CAST(block1 + i) != *BYTE_CAST(block2 + i))

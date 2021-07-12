@@ -2,7 +2,7 @@
 #define _BOOT_SETUP_H_
 
 #include <refi/refi.h>
-#include <refilib.h>
+#include <refilib/refilib.h>
 #include <boot/boot_structs.h>
 
 VOID* getACPI2_0table();

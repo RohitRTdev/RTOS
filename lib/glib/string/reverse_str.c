@@ -2,9 +2,9 @@
 
 void reverse_str(char *str)
 {
-    u64 length = rstrlen(str);
+    uint64_t length = rstrlen(str);
     char hold;
-    for(u64 index = 0;index < length / 2; index++)
+    for(uint64_t index = 0;index < length / 2; index++)
     {
         hold = str[index];  
         str[index] = str[length - index - 1];

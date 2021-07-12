@@ -1,12 +1,12 @@
 #include <glib/rstrings.h>
 
-void wrstrcpy(wchar *dest, wchar *src)
+void wrstrcpy(wchar_t *dest, wchar_t *src)
 {
-    u64 length = 0;
-    while(src[length] != '\0')
+    uint64_t length = 0;
+    while(src[length] != L'\0')
     {
         dest[length] = src[length];
         length++;
     }
-    dest[length] = '\0';
+    dest[length] = L'\0';
 }
