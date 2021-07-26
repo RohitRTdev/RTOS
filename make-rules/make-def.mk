@@ -47,7 +47,7 @@ ifeq ($(CURDIR),$(LIBGPATH))
 endif
 LDFLAGS +=-o
 
-SRC =$(filter-out include*/*.* lib/*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
+SRC =$(filter-out include*/* lib/*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
 DEPS =$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
 OBJS =$(patsubst %.c,%.o,$(patsubst %.s,%.o,$(SRC))) #Convert to .o files
 DEPENDFILE :=depends.inc

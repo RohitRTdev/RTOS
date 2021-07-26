@@ -3,11 +3,14 @@
 
 #include <refi/refi.h>
 
-#define MODULE_MAX 10
+typedef enum{
+	KERNEL = 1,
+	BOOTLOADER,
+	STACK,
+	FONT
+}module_types;
 
-#define KERNEL 1
-#define	STACK 2
-#define FONT 3
+#define MAX_BOOT_MODULES 10
 
 typedef struct{
 	UINT8 module_type;
@@ -16,27 +19,10 @@ typedef struct{
 }boot_time_modules;
 
 
-typedef struct {
-	char module_name[10];
-	UINT8 module_id;
-	UINT64 module_size;
-	VOID* module_start;
-	UINT8 module_type;
-	union{
-		struct{
-			VOID* module_entry;
-			VOID* reloc_section;
-		}kernel;
-	};
-}boot_module;
+EFI_STATUS init_boot_module(const boot_time_modules* bootloader_description, EFI_HANDLE image_handle, void* boot_module_entry);
 
+EFI_STATUS load_boot_modules(const boot_time_modules* boot_time_loaded_modules, const UINTN number_of_modules, EFI_HANDLE image_handle)
 
-//Kernel module entry function signatures
-typedef void (*kernel)(boot_info*);
-
-
-EFI_STATUS load_boot_modules(boot_time_modules* boot_time_loaded_modules, UINT64 number_of_modules);
-
-UINT8 create_boot_module(CHAR8* ModuleName, UINT8 ModuleType, VOID* ModuleEntry, UINT64 ModuleSize, VOID* ModuleStart, VOID* ModuleReloc);
+EFI_STATUS add_boot_module(const CHAR8* module_name, const UINT8 module_type, const CHAR16* module_path, VOID* module_start, VOID* module_entry, UINT64 module_size, VOID* reloc_section);
 
 #endif

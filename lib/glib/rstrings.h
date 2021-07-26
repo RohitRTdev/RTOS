@@ -1,5 +1,5 @@
-#ifndef _R_STRINGS_H_
-#define _R_STRINGS_H_
+#ifndef _GLIB_R_STRINGS_H_
+#define _GLIB_R_STRINGS_H_
 
 #include <rtos/rtypes.h>
 #include <rtos/defs.h>

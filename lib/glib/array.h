@@ -22,7 +22,7 @@ primitive_array* remove_array_member(primitive_array* array_descriptor, void* ar
 
 void* get_array_member_by_id(primitive_array* array_descriptor, void* member_key_address, void* member_key_value, size_t key_value_size);
 
-void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*check_array_member)(void*));
+void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*check_array_member)(void*), void* check_param);
 
 primitive_array* fill_array(primitive_array* array_descriptor, void* fill_struct);
 

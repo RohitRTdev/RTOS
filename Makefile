@@ -16,7 +16,7 @@ TARGETS :=boot/BOOTx64.EFI kernel/RTcore.rm
 RTcore_DIR :=kernel
 
 
-DEBUGTARGET :=$(BOOT_DIR)
+DEBUGTARGET :=boot
 GENCMD := $(findstring gen-dep,$(MAKECMDGOALS))
 DEBUGMODE :=NORMAL
 
@@ -42,7 +42,7 @@ ifeq ($(findstring $(DEBUGMODE),NORMAL COMPLETE),)
 $(error DEBUGMODE=$(DEBUGMODE) is an invalid option)
 endif
 
-.PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep
+.PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep set-debug-target
 default: 
 	@echo "$(RED)Execute $(BOLD)make build$(END) $(RED)to get started$(END)"
 
@@ -56,15 +56,19 @@ debug-compile:
 	@cd $(DEBUGTARGET) && $(MAKE) $(GENCMD) build MAKEFLAGS=$(INCLUDE) DEBUGMODE=$(DEBUGMODE)
 
 
+set-debug-target:
+	@echo "$(YELLOW)Setting $(BOLD)debug-target$(END)$(YELLOW) as $(DEBUGTARGET)$(END)"
+	@sed -i 's/^DEBUGTARGET :=.*/DEBUGTARGET :=$(DEBUGTARGET)/' Makefile
+
 $(foreach target,$(TARGETS),$(eval $(call build-target,$(target),$(dir $(target)))))
 
 
 RTOS: $(TARGETS)
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
-	
-#Used only for testing purposes(Do not call this option in make)	
+
+#Used only for testing purposes(Do not call this option in make)
 build-img: $(OS_IMG) 
-	
+
 $(OS_IMG): $(TARGETS)
 	@echo "$(RED)Starting RTOS image build!$(END)"
 	$(eval var=$(shell sudo losetup -f))
@@ -95,4 +99,4 @@ very-clean:
 	@echo "$(GREEN)$(BOLD)Restored initial directory structure$(END)"
 
 gen-dep:
-	$(GENDEP_MESSAGE)	
+	$(GENDEP_MESSAGE)

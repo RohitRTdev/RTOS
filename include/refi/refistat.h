@@ -2,16 +2,16 @@
 #define _REFI_STAT_H_
 
 #include "refidefs.h"
-//All error codes have positive values
+//All error codes have negative values
 
 //For more info on error codes, check Appendix D of UEFI 2.7 specification
 
 #define EFIWARN(a)                            (a)
-#define EFI_ERROR(a)              (((INTN) a) < 0)
+#define EFI_ERROR(a)              (((INTN)a) < 0)
 #define stat_set(a)               ((a) | 0x8000000000000000ULL)  //Set a status code
-//Simple macro to test the error code sign
 
-#define stat_check(status) status & 0x7FFFFFFFFFFFFFFFULL //Macro to clear high bit(Status codes have high bit set by default)
+//Simple macro to test the error code sign
+#define stat_check(status) status & ~0x8000000000000000ULL //Macro to clear high bit(Status codes have high bit set by default)
 
 
 
@@ -49,11 +49,11 @@
 #define EFI_COMPROMISED_DATA            stat_set(33)
 
 #define EFI_WARN_UNKOWN_GLYPH           EFIWARN(1)
-#define EFI_WARN_UNKNOWN_GLYPH          EFIWARN(1)
 #define EFI_WARN_DELETE_FAILURE         EFIWARN(2)
 #define EFI_WARN_WRITE_FAILURE          EFIWARN(3)
 
 
+/* RTOS bootloader defined errors */
 #define KERNEL_LOAD_ERROR                stat_set(50)
 #define FONT_NOT_SUPPORTED               stat_set(51)
 

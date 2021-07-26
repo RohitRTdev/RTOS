@@ -125,7 +125,7 @@ void* get_array_member_by_id(primitive_array* array_descriptor, void* member_key
 
 }
 
-void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*check_array_member)(void*))
+void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*check_array_member)(void*), void* check_param)
 {
 	if(!check_array_descriptor(array_descriptor) || check_array_member == NULL)
 		return NULL;
@@ -144,7 +144,7 @@ void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*
 			array_ptr += member_size;
 			continue;
 		}
-		op_status = check_array_member(array_ptr);
+		op_status = check_array_member(check_param);
 		
 		if(op_status)
 		{

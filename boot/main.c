@@ -1,57 +1,31 @@
 #include <refi/refi.h>
 #include <refilib/refilib.h>
-#include <boot/primary_loader.h>
-#include <boot/psf_font.h>
-#include <boot/boot_structs.h>
-#include <boot/boot_virtual_setup.h>
 #include <boot/modules.h>
-#include <boot/boot_setup.h>
 
-boot_time_modules boot_time_loaded_modules[] = {{STACK, NULL, "kernel_stack"},
+#define MODULE_LIST_MEMBERS 4
+boot_time_modules boot_time_loaded_modules[] = {{BOOTLOADER, L"\\EFI\\BOOT\\BOOTx64.EFI","RTboot"},
+                                                {STACK, NULL, "kernel_stack"},
                                                 {KERNEL,L"\\Modules\\RTcore.rm","RTcore"},
-                                                {FONT,L"\\Modules\\RTcore.rm","DefaultPSFfont"}};
+                                                {FONT,L"\\Fonts\\zap-light18.psf","DefaultPSFfont"}};
 
 boot_info boot_info_send;
 Map_descriptor MemMap;
 
 
 /* The UEFI boot manager calls this function */
-EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
+EFI_STATUS efi_main(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE *system_table)
 {
     EFI_STATUS op_status = EFI_SUCCESS;
-    UINT8 *entry = NULL;
     
-    CHAR16 *image_path = L"\\Modules\\RTcore.rm";
-    CHAR16 *basic_font_path = L"\\Fonts\\zap-light18.psf";
-
-    InitLib(ImageHandle, SystemTable);  /* Initialise REFI library */
+    InitLib(image_handle, system_table);  /* Initialise REFI library */
 
     EFI_clearscreen();
 
-    //Load kernel components into physical address space
+    init_boot_module(&boot_time_loaded_modules[0], image_handle, efi_main); /* Initialise the bootloader itself */
 
-    load_boot_modules(&boot_time_loaded_modules);
-    entry = pe_loadfile(ImageHandle, image_path, boot_info_send.image);
-    if(!entry)
-    {
-        EFI_FATAL_REPORT(L"Kernel load error", KERNEL_EFI_ERROR);
-    }
-
-    kernel kernel_entry = (kernel)entry;    
-
-    //Get basic font for low level print functionality
-
-    basic_font_load(ImageHandle, basic_font_path, &boot_info_send.basic_font_base);
-    if(!boot_info_send.basic_font_base.basic_font_base)
-    {
-        EFI_FATAL_REPORT(L"Basic PSF load error", KERNEL_EFI_ERROR);
-    }
-
-    //Allocate new stack for kernel at highest memory location
-    status = BS->AllocatePages(AllocateAnyPages, EfiLoaderData, STACK_SIZE / PAGESIZE, (EFI_PHYSICAL_ADDRESS*)&boot_info_send.stack.stack_top);
-    EFI_FATAL_REPORT(L"Stack buffer allocation failed!", status);
-
-    boot_info_send.stack.stack_size = STACK_SIZE;
+    /* Load kernel components into physical address space */
+    op_status = load_boot_modules(boot_time_loaded_modules, MODULE_LIST_MEMBERS, image_handle);
+    EFI_FATAL_REPORT(L"Kernel components loading failed!", op_status);
 
     //Get GOP framebuffer
 

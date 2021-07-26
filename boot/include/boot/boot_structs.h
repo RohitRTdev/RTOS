@@ -2,7 +2,6 @@
 #define _BOOT_STRUCTS_H_
 
 #include <refi/refi.h>
-#include <boot/primary_loader.h>
 
 #define STACK_SIZE 10*PAGESIZE 
 #define RT_STACK 0x80000000
@@ -31,7 +30,6 @@ typedef struct {
 typedef struct{
     Map_descriptor *Map;
     EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *framebuffer;
-    Image_data *image;
     void *acpi;
     basic_font_info basic_font_base;
     stack_info stack;

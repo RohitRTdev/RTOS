@@ -1,5 +1,5 @@
-#ifndef _R_MEMORY_H_
-#define _R_MEMORY_H_
+#ifndef _GLIB_R_MEMORY_H_
+#define _GLIB_R_MEMORY_H_
 
 #include <rtos/rtypes.h>
 

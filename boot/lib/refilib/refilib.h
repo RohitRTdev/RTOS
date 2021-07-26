@@ -10,32 +10,17 @@ extern EFI_RUNTIME_SERVICES *RT;
 
 /*Call this function before using any REFI library functions and also to have ST(Sytem Table), 
 BS(Boot Services) and RT(Runtime Services) defined */
-void InitLib(IN EFI_HANDLE ImageHandle,IN EFI_SYSTEM_TABLE* SystemTable);
+void init_lib(IN EFI_HANDLE image_handle,IN EFI_SYSTEM_TABLE* system_table);
+
 //Print function accepts two tokens as of now, %s(string) and %d(64 bit unsigned integer)
-EFI_STATUS printEFI(IN CHAR16 *string, ...);
-EFI_STATUS EFI_clearscreen();
+EFI_STATUS print_efi(IN CHAR16 *string, ...);
+EFI_STATUS efi_clearscreen();
+
 //Function to report fatal EFI errors
 void EFI_FATAL_REPORT(IN CHAR16 *ErrorMessage, IN EFI_STATUS status_code);
 
-//Functions to manipulate strings
-UINT64 rstrlen(char *str);
-void rstrcat(char *dest, char *src);
-INT64 rstrcmp(char *text1, char *text2);
-void rstrcpy(char *dest, char *src);
-
-VOID refizeromem(VOID *dest, UINT64 size_to_copy);
-
-//Analogous string functions for UNICODEINT64 rstrcmp(char *text1, char *text2); enabled
-UINT64 wrstrlen(CHAR16 *str);
-void wrstrcat(CHAR16 *dest, CHAR16 *src);
-INT64 wrstrcmp(CHAR16 *text1, CHAR16 *text2);
-void wrstrcpy(CHAR16 *dest, CHAR16 *src);
-
-//File operations
-
-
-
 //Miscellaneous
 BOOLEAN guid_check(EFI_GUID guid1, EFI_GUID guid2);
+VOID copy_guid(EFI_GUID* src_guid, EFI_GUID* dest_guid)
 
 #endif
