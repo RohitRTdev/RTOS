@@ -2,22 +2,7 @@
 #define _BOOT_STRUCTS_H_
 
 #include <refi/refi.h>
-
-#define STACK_SIZE 10*PAGESIZE 
-#define RT_STACK 0x80000000
-#define RT_MODULE 0x80000001
-#define RT_MAP 0x80000002
-#define RT_RCS 0x80000003
-
-typedef struct{
-    UINT8* basic_font_base;
-    UINT64 basic_font_size;
-}basic_font_info;
-
-typedef struct{
-    UINT8 *stack_top;
-    UINT64 stack_size;
-}stack_info;
+#include <boot/modules.h>
 
 typedef struct {
     UINTN MapSize;
@@ -28,11 +13,10 @@ typedef struct {
 }Map_descriptor;
 
 typedef struct{
+    boot_module* loaded_modules_array;
     Map_descriptor *Map;
     EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *framebuffer;
-    void *acpi;
-    basic_font_info basic_font_base;
-    stack_info stack;
+    VOID *acpi;
     UINTN max_virtual_address;
 }boot_info;
 

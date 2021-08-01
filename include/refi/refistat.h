@@ -56,5 +56,6 @@
 /* RTOS bootloader defined errors */
 #define KERNEL_LOAD_ERROR                stat_set(50)
 #define FONT_NOT_SUPPORTED               stat_set(51)
-
+#define UNSUPPORTED_EXECUTABLE_FORMAT    stat_set(52)
+#define ACPI_ERROR                       stat_set(53)
 #endif

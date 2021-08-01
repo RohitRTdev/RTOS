@@ -5,6 +5,7 @@
 
 typedef struct{
 	void* list_base_address;
+	void* last_accessed_element;
 	size_t empty_key_offset;
 	size_t number_of_array_members;
 	size_t total_array_capacity;

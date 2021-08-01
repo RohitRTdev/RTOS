@@ -20,9 +20,11 @@ DEBUGTARGET :=boot
 GENCMD := $(findstring gen-dep,$(MAKECMDGOALS))
 DEBUGMODE :=NORMAL
 
+RTBUILDTOOL :=$(WORKINGDIR)/tools/rtmodx64/rtmodx64
+
 include make-rules/image-rules.mk
 
-export TOPDIR WORKINGDIR GENCMD
+export TOPDIR WORKINGDIR GENCMD RTBUILDTOOL
 
 define build-target
 $(1):
@@ -42,7 +44,7 @@ ifeq ($(findstring $(DEBUGMODE),NORMAL COMPLETE),)
 $(error DEBUGMODE=$(DEBUGMODE) is an invalid option)
 endif
 
-.PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep set-debug-target
+.PHONY: default debug build debug-compile RTOS build-img clean test very-clean gen-dep set-debug-target clean-dep restore
 default: 
 	@echo "$(RED)Execute $(BOLD)make build$(END) $(RED)to get started$(END)"
 
@@ -51,7 +53,7 @@ default:
 debug: debug-compile
 build: RTOS
 
-debug-compile:
+debug-compile: $(RTBUILDTOOL)
 	@echo "$(RED)$(BOLD)Starting Debugging for $(DEBUGTARGET)$(END)"
 	@cd $(DEBUGTARGET) && $(MAKE) $(GENCMD) build MAKEFLAGS=$(INCLUDE) DEBUGMODE=$(DEBUGMODE)
 
@@ -63,8 +65,11 @@ set-debug-target:
 $(foreach target,$(TARGETS),$(eval $(call build-target,$(target),$(dir $(target)))))
 
 
-RTOS: $(TARGETS)
+RTOS: $(RTBUILDTOOL) $(TARGETS)
 	@echo "$(GREEN)$(BOLD)Components build successful$(END)"
+
+
+#TODO: Add automated image building mechanism
 
 #Used only for testing purposes(Do not call this option in make)
 build-img: $(OS_IMG) 
@@ -98,5 +103,16 @@ very-clean:
 	@$(OPERATE_KERNEL) $@
 	@echo "$(GREEN)$(BOLD)Restored initial directory structure$(END)"
 
+restore: very-clean
+	@rm -rf tools
+
 gen-dep:
 	$(GENDEP_MESSAGE)
+
+clean-dep:
+	@echo "$(GREEN)$(BOLD)Recursively cleaning all the project dependencies$(END)"
+	@./scripts/clean-deps.sh
+
+
+$(RTBUILDTOOL): 
+	./scripts/rt-build.sh $(PRETTY_PRINT)

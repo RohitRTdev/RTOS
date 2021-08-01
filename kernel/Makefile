@@ -8,15 +8,17 @@ LIBHEADER += -Ilib/rclib/
 LIBRCPATH :=lib/rclib
 LIBRC :=$(LIBRCPATH)/librc.a
 LIB += $(LIBRC)
-TARGET :=RTcore.rm
+TARGET :=RTcore.pe
+RTTARGET :=RTcore.rm
 
 include update-rules.mk
 
 build: $(TARGET) 
 
 $(TARGET): $(OBJS) $(LIB)
-	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(TARGET)$(END)"
+	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(RTTARGET)$(END)"
 	@$(LD) $(LDFLAGS) $@ $^ 
+	@$(RTBUILDTOOL) $(TARGET) -o $(RTTARGET)
 
 clean::
 	@cd $(LIBRCPATH) && $(MAKE) clean

@@ -8,7 +8,7 @@ EFI_STATUS init_kernel_stack(boot_time_modules* stack_description)
 	EFI_PHYSICAL_ADDRESS* physical_stack_base = NULL;
 	EFI_STATUS op_status = EFI_SUCCESS;
 
-	op_status = BS->AllocatePages(AllocateAnyPages, EfiLoaderData, STACK_SIZE / PAGESIZE, &physical_stack_base);	
+	op_status = allocate_loader_pages(STACK_SIZE, (EFI_PHYSICAL_ADDRESS*)&physical_stack_base);
 
 	RETURN_ON_ERROR(op_status)
 

@@ -22,4 +22,18 @@
 
 #define MAXCHARCOUNT 100
 
+/* Common address access operation */
+#define GET_1_BYTE(address) ((uint8_t*)(address))
+#define GET_2_BYTES(address) ((uint16_t*)(address))
+#define GET_4_BYTES(address) ((uint32_t*)(address))
+#define GET_8_BYTES(address) ((uint64_t*)(address))
+
+
+#define SET_1_BYTE(address) (*GET_1_BYTE(address))
+#define SET_2_BYTES(address) (*GET_2_BYTES(address))
+#define SET_4_BYTES(address) (*GET_4_BYTES(address))
+#define SET_8_BYTES(address) (*GET_8_BYTES(address))
+
+
+
 #endif

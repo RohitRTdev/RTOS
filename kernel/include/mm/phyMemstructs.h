@@ -2,7 +2,7 @@
 #define _PHY_MEM_STRUCTS_H_
 
 #include <kernel.h>
-#include <rclib.h>
+#include <rclib/rclib.h>
 
 #define ALLC 0x434c4c41 
 #define REMD 0x444d4552

@@ -1,5 +1,5 @@
-
-PRETTY_PRINT ?=ENABLE #Note that this is overriden by command line argument
+#Note that this is overriden by command line argument
+PRETTY_PRINT ?=ENABLE
 RED :=\e[31m
 YELLOW :=\e[33m
 GREEN :=\e[32m

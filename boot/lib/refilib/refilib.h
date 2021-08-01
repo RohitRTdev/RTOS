@@ -12,15 +12,18 @@ extern EFI_RUNTIME_SERVICES *RT;
 BS(Boot Services) and RT(Runtime Services) defined */
 void init_lib(IN EFI_HANDLE image_handle,IN EFI_SYSTEM_TABLE* system_table);
 
-//Print function accepts two tokens as of now, %s(string) and %d(64 bit unsigned integer)
+/* Print function accepts two tokens as of now, %s(string) and %d(64 bit unsigned integer) */
 EFI_STATUS print_efi(IN CHAR16 *string, ...);
 EFI_STATUS efi_clearscreen();
 
-//Function to report fatal EFI errors
-void EFI_FATAL_REPORT(IN CHAR16 *ErrorMessage, IN EFI_STATUS status_code);
+/* Function to report fatal EFI errors */
+void EFI_FATAL_REPORT(IN CHAR16 *error_message, IN EFI_STATUS status_code);
 
-//Miscellaneous
+/* Memory */
+EFI_STATUS allocate_loader_pages(UINTN size, EFI_PHYSICAL_ADDRESS* buffer_address);
+
+/* Miscellaneous */
 BOOLEAN guid_check(EFI_GUID guid1, EFI_GUID guid2);
-VOID copy_guid(EFI_GUID* src_guid, EFI_GUID* dest_guid)
+VOID copy_guid(EFI_GUID* src_guid, EFI_GUID* dest_guid);
 
 #endif

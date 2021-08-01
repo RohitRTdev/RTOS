@@ -5,7 +5,7 @@
 #include <boot/modules.h>
 
 EFI_STATUS load_kernel_module(boot_time_modules* kernel_module, EFI_HANDLE image_handle);
-EFI_STATUS load_kernel_font(boot_time_modules* kernel_font, EFI_HANDLE image_handle);
+EFI_STATUS rt_loadfile(EFI_HANDLE device_handle, boot_time_modules* kernel_font);
 
 
 #endif

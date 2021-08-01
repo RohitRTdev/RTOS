@@ -61,8 +61,7 @@ default:
 gen-dep: $(DEPS)
 	@echo "$(CYAN)$(BOLD)Creating dependency file for $(ACTIVEDIR)$(END)"
 	@touch $^
-	@cat $(DEPS) > $(DEPENDFILE)
-	@rm -rf $(DEPS)
+	@for dep in $(DEPS); do cat $(dep) >> $(DEPENDFILE) ; done
 
 #Default rule for generating dependency file
 %.d: %.c
@@ -88,8 +87,12 @@ $(LIBG): $(SUBDEPENDENCY)
 .PHONY: clean very-clean sub-gen-dep
 clean::
 	@echo "$(RED)$(BOLD)Deleting intermediate files in $(ACTIVEDIR)$(END)"
-	@rm -rf $(OBJS) $(DEPENDFILE) $(DEPS)
+	@rm -rf $(OBJS) $(DEPENDFILE) $(DEPS) $(TARGET)
 
 very-clean:: clean
 	@echo "$(RED)$(BOLD)Deleting $(TARGET)$(END)"
-	@rm -rf $(TARGET)
+	@rm -rf $(TARGET) $(RTTARGET)
+
+clean-dep:
+	@echo "$(RED)Removing intermediate dependencies$(END)"
+	@rm -rf $(DEPS)

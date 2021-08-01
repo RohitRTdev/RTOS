@@ -32,7 +32,7 @@ EFI_FILE_PROTOCOL* openfile(EFI_HANDLE device_handle, CHAR16 *file_path)
 }
 
 
-EFI_HANDLE file_init(EFI_HANDLE ImageHandle)
+EFI_HANDLE get_device_handle(EFI_HANDLE ImageHandle)
 {
     EFI_STATUS status;
     EFI_GUID load_img_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
@@ -46,4 +46,12 @@ EFI_HANDLE file_init(EFI_HANDLE ImageHandle)
     EFI_HANDLE device_handle = load_img_prot->DeviceHandle;
 
     return device_handle;
+}
+
+
+
+VOID read_simple_file(EFI_FILE_PROTOCOL* file_handle, UINTN read_offset, UINTN* read_size, VOID* read_buffer)
+{
+    file_handle->SetPosition(file_handle, read_offset);
+    file_handle->Read(file_handle, read_size, read_buffer);
 }
