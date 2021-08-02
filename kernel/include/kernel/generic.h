@@ -3,6 +3,8 @@
 
 //Generic header for PSF
 
+#include <rtos/rtypes.h>
+
 typedef struct{
     uint64_t glyphs;  //Total number of glyphs
     uint64_t height;  

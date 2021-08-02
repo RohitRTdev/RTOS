@@ -1,7 +1,7 @@
-#include <rtypes.h>
+#include <rtos/rtypes.h>
 #include <logging/logger.h>
 #include <stdarg.h>
-#include <rstrings.h>
+#include <glib/rstrings.h>
 
 #pragma GCC diagnostic ignored "-Wvarargs"
 

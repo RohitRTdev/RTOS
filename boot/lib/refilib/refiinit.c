@@ -4,9 +4,9 @@ EFI_SYSTEM_TABLE *ST;
 EFI_BOOT_SERVICES *BS;
 EFI_RUNTIME_SERVICES *RT;
 
-void InitLib(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
+void init_lib(EFI_HANDLE image_handle, EFI_SYSTEM_TABLE *system_table)
 {
-    ST = SystemTable;
-    BS = SystemTable->BootServices;
-    RT = SystemTable->RuntimeServices;
+    ST = system_table;
+    BS = system_table->BootServices;
+    RT = system_table->RuntimeServices;
 }

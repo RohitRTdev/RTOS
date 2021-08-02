@@ -1,7 +1,7 @@
-#include <boot.h>
-#include <fonts/generic.h>
-#include <rcommon.h>
+#include <kernel/generic.h>
+#include <glib/rcommon.h>
 #include <logging/logger.h>
+#include <rtos/handoff.h>
 
 
 extern font_header generic_psf_info;

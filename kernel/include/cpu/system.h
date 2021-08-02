@@ -1,8 +1,8 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
-#include <rtypes.h>
-#include <utils.h>
+#include <rtos/rtypes.h>
+#include <kernel/utils.h>
 
 #define READ 0
 #define WRITE 1

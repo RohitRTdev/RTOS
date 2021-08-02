@@ -11,7 +11,7 @@
 
 primitive_array* init_static_array(primitive_array* array_descriptor, void* list_base_address, void* empty_key_address, size_t list_capacity, size_t list_struct_size, size_t empty_key_value)
 {
-	if(!verify_function_pointers((void* []){array_descriptor, list_base_address, empty_key_address}, 3) || list_capacity == 0 )
+	if(!verify_function_pointers((const void* []){array_descriptor, list_base_address, empty_key_address}, 3) || list_capacity == 0 )
 		return NULL;
 
 	array_descriptor->list_base_address = list_base_address;
@@ -38,14 +38,11 @@ primitive_array* init_static_array(primitive_array* array_descriptor, void* list
 
 primitive_array* add_array_member(primitive_array* array_descriptor, void* new_array_member)
 {
-	if(!verify_function_pointers((void* []){array_descriptor, array_descriptor->list_base_address}, 2) || array_descriptor->number_of_array_members == array_descriptor->total_array_capacity || new_array_member == NULL)
+	if(!verify_function_pointers((const void* []){array_descriptor, array_descriptor->list_base_address}, 2) || array_descriptor->number_of_array_members == array_descriptor->total_array_capacity || new_array_member == NULL)
 		return NULL;
 	
-	size_t total_array_capacity = array_descriptor->total_array_capacity;
 	uint8_t* array_ptr = array_descriptor->list_base_address;
 	size_t member_size = array_descriptor->list_member_size;
-	size_t empty_key_offset = array_descriptor->empty_key_offset;
-	size_t empty_key_value = array_descriptor->empty_key_value;
 
 	/* Search for an empty spot */
 	while(!ARRAY_EMPTY_CONDITION(array_ptr))
@@ -62,7 +59,7 @@ primitive_array* add_array_member(primitive_array* array_descriptor, void* new_a
 
 primitive_array* remove_array_member(primitive_array* array_descriptor, void* array_member)
 {
-	if(!verify_function_pointers((void* []){array_descriptor, array_descriptor->list_base_address}, 2) || array_descriptor->number_of_array_members == 0 || array_member == NULL)
+	if(!verify_function_pointers((const void* []){array_descriptor, array_descriptor->list_base_address}, 2) || array_descriptor->number_of_array_members == 0 || array_member == NULL)
 		return NULL;
 
 	/* Note that we're implicitly assuming here that our empty_key_value is of 8 bytes */
@@ -75,13 +72,11 @@ primitive_array* remove_array_member(primitive_array* array_descriptor, void* ar
 
 void* get_array_member_by_id(primitive_array* array_descriptor, void* member_key_address, void* member_key_value, size_t key_value_size)
 {
-	if(!verify_function_pointers((void* []){array_descriptor, array_descriptor->list_base_address}, 2) || member_key_address == NULL || member_key_value == NULL || key_value_size == 0)
+	if(!verify_function_pointers((const void* []){array_descriptor, array_descriptor->list_base_address}, 2) || member_key_address == NULL || member_key_value == NULL || key_value_size == 0)
 		return NULL;
 
 	uint8_t* array_ptr = array_descriptor->list_base_address;
 	uint64_t index = 0;
-	size_t empty_key_offset = array_descriptor->empty_key_offset;
-	size_t empty_key_value  = array_descriptor->empty_key_value;
 	size_t member_size = array_descriptor->list_member_size;
 	boolean op_status = false;
 	size_t member_key_offset = (size_t)array_descriptor->list_base_address - (size_t)member_key_address;
@@ -124,20 +119,17 @@ void* get_array_member_by_id(primitive_array* array_descriptor, void* member_key
 			
 	}
 	
-	if(!op_status)
-		return NULL;
+	return NULL;
 
 }
 
 void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*check_array_member)(void*), void* check_param)
 {
-	if(verify_function_pointers((void* []){array_descriptor, array_descriptor->list_base_address}, 2)|| check_array_member == NULL)
+	if(verify_function_pointers((const void* []){array_descriptor, array_descriptor->list_base_address}, 2)|| check_array_member == NULL)
 		return NULL;
 
 	uint8_t* array_ptr = array_descriptor->list_base_address;
 	uint64_t index = 0;
-	size_t empty_key_offset = array_descriptor->empty_key_offset;
-	size_t empty_key_value  = array_descriptor->empty_key_value;
 	size_t member_size = array_descriptor->list_member_size;
 	boolean op_status = false;
 
@@ -156,14 +148,14 @@ void* get_array_member_by_callback(primitive_array* array_descriptor, boolean (*
 			break;
 		}
 	}
-	if(!op_status)
-		return NULL;
+	
+	return NULL;
 }
 
 
 primitive_array* fill_array(primitive_array* array_descriptor, void* fill_struct)
 {
-	if(!verify_function_pointers((void* []){array_descriptor, array_descriptor->list_base_address}, 2))
+	if(!verify_function_pointers((const void* []){array_descriptor, array_descriptor->list_base_address}, 2))
 		return NULL;
 	
 	if(fill_struct == NULL)
@@ -198,7 +190,7 @@ void* iter_array_next(primitive_array* array_descriptor)
 	if(array_descriptor == NULL)
 		return NULL;
 
-	for(uint8_t* array_entry = (size_t)array_descriptor->last_accessed_element + array_descriptor->list_member_size; array_entry <= (size_t)array_descriptor->list_base_address + array_descriptor->number_of_array_members * ( array_descriptor->list_member_size - 1); array_entry += array_descriptor->list_member_size)
+	for(uint8_t* array_entry = (uint8_t*)((size_t)array_descriptor->last_accessed_element + array_descriptor->list_member_size); (size_t)array_entry <= (size_t)array_descriptor->list_base_address + array_descriptor->number_of_array_members * ( array_descriptor->list_member_size - 1); array_entry += array_descriptor->list_member_size)
 	{
 		if(*(size_t*)((uint8_t*)array_entry+array_descriptor->empty_key_offset) != array_descriptor->empty_key_value)
 		{

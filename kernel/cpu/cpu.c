@@ -1,6 +1,8 @@
 #include <cpu/cpu.h>
-#include <rclib.h>
+#include <rclib/rclib.h>
 #include <logging/basic_print.h>
+#include <glib/rmemory.h>
+#include <glib/rstrings.h>
 
 
 processor_info current_processor_info;

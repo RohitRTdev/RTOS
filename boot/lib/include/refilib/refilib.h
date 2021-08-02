@@ -21,6 +21,7 @@ void EFI_FATAL_REPORT(IN CHAR16 *error_message, IN EFI_STATUS status_code);
 
 /* Memory */
 EFI_STATUS allocate_loader_pages(UINTN size, EFI_PHYSICAL_ADDRESS* buffer_address);
+EFI_STATUS allocate_loader_pool(UINTN size, VOID** buffer);
 
 /* Miscellaneous */
 BOOLEAN guid_check(EFI_GUID guid1, EFI_GUID guid2);

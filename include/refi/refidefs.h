@@ -8,8 +8,10 @@
 #define OUT
 #define OPTIONAL
 #define CONST const
-#define NULL ((void *)0)
- 
+
+#ifndef NULL
+    #define NULL ((VOID *)0)
+#endif
 
 #define EFI_SYSTEM_TABLE_SIGNATURE 0x5453595320494249
 #define EFI_2_70_SYSTEM_TABLE_REVISION ((2<<16) | (70))

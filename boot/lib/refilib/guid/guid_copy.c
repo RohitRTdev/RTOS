@@ -4,7 +4,7 @@
 
 void copy_guid(EFI_GUID* src_guid, EFI_GUID* dest_guid)
 {
-	void* copy_guid_params[2] = {src_guid, dest_guid};
+	const void* copy_guid_params[2] = {src_guid, dest_guid};
 	
 	if(verify_function_pointers(copy_guid_params, 2))
 	{

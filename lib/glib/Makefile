@@ -1,5 +1,6 @@
 include make-def.mk
 
+INCLUDE += -I../include/
 TARGET :=libg.a
 
 include update-rules.mk

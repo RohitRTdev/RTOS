@@ -1,9 +1,8 @@
-#include <boot.h>
-#include <kernel.h>
-#include <fonts/psf.h>
+#include <font/psf.h>
 #include <error/syserror.h>
-#include <fonts/generic.h>
+#include <kernel/generic.h>
 #include <logging/logger.h>
+#include <rtos/handoff.h>
 
 
 font_header generic_psf_info;
@@ -50,11 +49,11 @@ SYS_ERROR basic_PSF_renderer(uint8_t *base, EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE fr
 
 static SYS_ERROR PSF_1(uint8_t *base)
 {
-    PSF1_header hdr = { {*(base), *(base + 1) }, *(base + 2), *(base + 3) };
+    psf1_hdr hdr = { {*(base), *(base + 1) }, *(base + 2), *(base + 3) };
     uint64_t length = (hdr.mode == PSF1_MODE512)?512:256;
 
 
-    generic_psf_info.base = (uint8_t*)((uint64_t)base + sizeof(PSF1_header));
+    generic_psf_info.base = (uint8_t*)((uint64_t)base + sizeof(psf1_hdr));
     generic_psf_info.height = hdr.charsize;
     generic_psf_info.glyphs = length;
     generic_psf_info.width = 8;
@@ -67,7 +66,7 @@ static SYS_ERROR PSF_1(uint8_t *base)
 }
 static SYS_ERROR PSF_2(uint8_t *base)
 {   
-    PSF2_header *psf2_base_ptr = (PSF2_header*)base; 
+    psf2_hdr *psf2_base_ptr = (psf2_hdr*)base; 
 
     generic_psf_info.glyphs = psf2_base_ptr->length;
     generic_psf_info.height = psf2_base_ptr->height;

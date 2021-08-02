@@ -14,9 +14,11 @@ fi
 
 echo -e "${GREEN}${BOLD}Fetching files from https://github.com/RohitRTdev/RT-mod-creator/archive/refs/tags/v1.0.tar.gz"
 mkdir -p tools tools/rtmodx64
-cd tools/rtmodx64 && wget https://github.com/RohitRTdev/RT-mod-creator/archive/refs/tags/v1.0.tar.gz
+cd tools/rtmodx64 && wget https://github.com/RohitRTdev/RT-mod-creator/archive/refs/tags/v1.0.tar.gz > /dev/null 2>&1
+if [ $? != 0 ] ; then echo -e "${RED}${BOLD}Fetch failed...Exiting!${END}" && exit 1; fi
 echo -e "Extracting files from archive"
-tar -xvf v1.0.tar.gz
+tar -xvf v1.0.tar.gz > /dev/null 2>&1 
+if [ $? != 0 ] ; then echo -e "${RED}${BOLD}Extraction failed...Exiting!${END}" && exit 1; fi
 echo -e "Building rtmodx64"
 cd RT-mod-creator-1.0 && make -s && cd ..
 echo -e "Removing intermediate files${END}"

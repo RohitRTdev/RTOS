@@ -1,14 +1,15 @@
 #include <mm/mm.h>
 #include <mm/phyMem.h>
 #include <mm/phyMemtools.h>
-#include <rclib.h>
+#include <rclib/rclib.h>
+#include <glib/rmemory.h>
 
 static Super_Mem_desc global_desc;
 static boolean destroy_data;
 
 //TODO: Add suitable code to most functions to handle condition where we run out of descriptor space
 
-SYS_ERROR phyMem_init(Map_descriptor *MemMap)
+SYS_ERROR phyMem_init(map_descriptor *MemMap)
 {
     SYS_ERROR err_code = NO_ERROR;
 
@@ -89,7 +90,7 @@ SYS_ERROR AllocMem(size_t *size_ptr, void **buffer)
 
     SYS_ERROR err_code = NO_ERROR;
     size_t sizeToAllocate = *size_ptr;
-    size_t roundedSize = ralign_op(sizeToAllocate, PAGESIZE);
+    size_t roundedSize = ALIGN(sizeToAllocate, PAGESIZE);
 
     free_mem_desc *free_block = NULL;
     
@@ -224,7 +225,7 @@ SYS_ERROR ReAllocMem(size_t* size, void **buffer)
 */
 void add_free_mem_entry(size_t size, size_t address)  
 {                                                     
-    size_t roundedSize = ralign_op(size, PAGESIZE);  
+    size_t roundedSize = ALIGN(size, PAGESIZE);  
     free_mem_desc root = {(void*)address, roundedSize / PAGESIZE};
 
     defrag_at_free(&root, &global_desc);
@@ -235,7 +236,7 @@ void add_free_mem_entry(size_t size, size_t address)
 
 void add_allocated_mem_entry(size_t size, size_t address)
 {
-    size_t roundedSize = ralign_op(size, PAGESIZE);
+    size_t roundedSize = ALIGN(size, PAGESIZE);
     alloc_mem_desc *allocated_block = NULL;
 
     allocated_block = get_free_alloc_descriptor();

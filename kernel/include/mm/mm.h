@@ -2,9 +2,7 @@
 #define _MM_H_
 
 #include <error/syserror.h>
-#include <kernel.h>
-#include <mm/phyMem.h>
-#include <mm/virtualmem.h>
+#include <rtos/handoff.h>
 
 typedef struct {
     size_t RAM;
@@ -12,6 +10,6 @@ typedef struct {
 }meminfo;
 
 
-SYS_ERROR mm_init(Map_descriptor *map);
+SYS_ERROR mm_init(map_descriptor *map);
 
 #endif

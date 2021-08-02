@@ -1,11 +1,11 @@
 #include <mm/phyMemtools.h>
-#include <rclib.h>
+#include <rclib/rclib.h>
 #include <logging/basic_print.h>
 
 static size_t n_desc;
 
 //Finds the suitable block for initial memory setup
-size_t* phy_block_finder(Map_descriptor *map)
+size_t* phy_block_finder(map_descriptor *map)
 {
     size_t i = 0;
     size_t address = ADDRESS_NOT_FOUND;
@@ -15,14 +15,14 @@ size_t* phy_block_finder(Map_descriptor *map)
 
     //Reserve the 0th page (cannot be allocated)
 
-    memmap = getMemMapDescriptor(map->Map, map->DescSize, 0);
+    memmap = GET_MEM_MAP_DESCRIPTOR(map->Map, map->DescSize, 0);
     memmap->PhysicalStart += PAGESIZE;
     memmap->VirtualStart += PAGESIZE;
     memmap->NumberOfPages -= 1;
 
     while(i < n_desc)
     {
-        memmap = getMemMapDescriptor(map->Map, map->DescSize, i);
+        memmap = GET_MEM_MAP_DESCRIPTOR(map->Map, map->DescSize, i);
         type = memmap->Type;
         switch(type)
         {
@@ -55,7 +55,7 @@ size_t* phy_block_finder(Map_descriptor *map)
 }
 
 //Sets up the physical memory system
-SYS_ERROR phy_set_blocks(Map_descriptor *map, Super_Mem_desc *desc)
+SYS_ERROR phy_set_blocks(map_descriptor *map, Super_Mem_desc *desc)
 {
     size_t i = 0;
     EFI_MEMORY_DESCRIPTOR *memmap = NULL;
@@ -72,7 +72,7 @@ SYS_ERROR phy_set_blocks(Map_descriptor *map, Super_Mem_desc *desc)
 
     while(i < n_desc)
     {
-        memmap = getMemMapDescriptor(map->Map, map->DescSize, i);
+        memmap = GET_MEM_MAP_DESCRIPTOR(map->Map, map->DescSize, i);
         type = memmap->Type;
         switch(type)
         {

@@ -1,7 +1,7 @@
 #ifndef _SYS_ERROR_H_
 #define _SYS_ERROR_H_
 
-#include <rtypes.h>
+#include <rtos/rtypes.h>
 
 typedef uint64_t SYS_ERROR;
 

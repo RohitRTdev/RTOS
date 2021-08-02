@@ -1,10 +1,8 @@
 include make-def.mk
 
 #kernel specific files
-SRC +=$(wildcard ../utils/*.c ../utils/*.s)
-LDSCRIPTS =../ldscripts/kernel_script.ld
-CFLAGS += -Wall
-LIBHEADER += -Ilib/rclib/
+INCLUDE += -I$(CURDIR)/lib/include/
+LDSCRIPTS =$(WORKINGDIR)/ldscripts/kernel_script.ld
 LIBRCPATH :=lib/rclib
 LIBRC :=$(LIBRCPATH)/librc.a
 LIB += $(LIBRC)
@@ -17,8 +15,11 @@ build: $(TARGET)
 
 $(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) module $(RTTARGET)$(END)"
-	@$(LD) $(LDFLAGS) $@ $^ 
+	@$(LD) $(LDFLAGS) $^ -o $@ 
 	@$(RTBUILDTOOL) $(TARGET) -o $(RTTARGET)
+
+$(LIBRC): $(SUBDEPENDENCY)
+	@cd $(LIBRCPATH) && $(MAKE) $(GENCMD) $(BUILD)
 
 clean::
 	@cd $(LIBRCPATH) && $(MAKE) clean
@@ -27,3 +28,7 @@ clean::
 very-clean::
 	@cd $(LIBRCPATH) && $(MAKE) very-clean
 	@cd $(LIBGPATH) && $(MAKE) very-clean
+
+clean-dep::
+	@cd $(LIBRCPATH) && $(MAKE) clean-dep
+	@cd $(LIBGPATH) && $(MAKE) clean-dep

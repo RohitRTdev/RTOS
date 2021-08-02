@@ -1,3 +1,5 @@
+export override SHELL=/bin/sh
+
 include make-rules/colors.mk
 
 TOPDIR =RTOS
@@ -111,8 +113,9 @@ gen-dep:
 
 clean-dep:
 	@echo "$(GREEN)$(BOLD)Recursively cleaning all the project dependencies$(END)"
-	@./scripts/clean-deps.sh
+	@$(OPERATE_BOOT) $@
+	@$(OPERATE_KERNEL) $@
 
 
-$(RTBUILDTOOL): 
-	./scripts/rt-build.sh $(PRETTY_PRINT)
+$(RTBUILDTOOL):
+	@./scripts/rt-build.sh $(PRETTY_PRINT)

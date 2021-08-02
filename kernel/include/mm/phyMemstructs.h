@@ -1,7 +1,6 @@
 #ifndef _PHY_MEM_STRUCTS_H_
 #define _PHY_MEM_STRUCTS_H_
 
-#include <kernel.h>
 #include <rclib/rclib.h>
 
 #define ALLC 0x434c4c41 

@@ -1,7 +1,7 @@
 include make-def.mk
 
+INCLUDE += -I../include/
 TARGET =librc.a
-
 include update-rules.mk
 
 build: $(TARGET)

@@ -34,7 +34,11 @@ typedef uint16_t wchar_t;
 
 typedef uint8_t boolean;
 
-#define NULL ((void*)0)
+
+#ifndef NULL
+        #define NULL ((void*)0)
+#endif
+
 #define true ((boolean)1)
 #define false ((boolean)0)
 

@@ -1,5 +1,4 @@
 #include <error/syserror.h>
-#include <rtypes.h>
 #include <logging/basic_print.h>
 
 static SYS_ERROR rerrno;

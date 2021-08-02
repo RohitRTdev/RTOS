@@ -1,10 +1,7 @@
-#ifndef _PSF_H_
-#define _PSF_H_
+#ifndef _GL_PSF_H_
+#define _GL_PSF_H_
 
-#include <rtypes.h>
-#include <boot.h>
-#include <kernel.h>
-#include <error/syserror.h>
+#include <rtos/rtypes.h>
 
 //PSF_1
 #define PSF1_MAGIC0     0x36
@@ -20,7 +17,7 @@ typedef struct {
     uint8_t magic[2];
     uint8_t mode;
     uint8_t charsize;
-}PSF1_header;
+}psf1_hdr;
 
 //PSF_2
 
@@ -40,9 +37,6 @@ typedef struct{
     uint32_t length;        
     uint32_t charsize;      
     uint32_t height, width; 
-}PSF2_header;
-
-SYS_ERROR basic_PSF_renderer(uint8_t *base, EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE framebuf, EFI_GRAPHICS_OUTPUT_MODE_INFORMATION frameinfo);
-
+}psf2_hdr;
 
 #endif

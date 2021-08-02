@@ -1,10 +1,10 @@
 include make-def.mk
 
-LDSCRIPTS = ../ldscripts/boot_script.ld
+INCLUDE +=-I$(CURDIR)/lib/include/
+LDSCRIPTS = $(WORKINGDIR)/ldscripts/boot_script.ld
 CFLAGS += -fstack-limit-symbol=0x7ffe0000 
-LIBHEADER += -Ilib/refilib/
-LIBREFIPATH :=lib/refilib
-LIBREFI :=$(LIBREFIPATH)/librefi.a
+LIBREFIPATH =lib/refilib
+LIBREFI = $(LIBREFIPATH)/librefi.a
 LIB +=$(LIBREFI) 
 TARGET =BOOTx64.EFI
 
@@ -14,7 +14,7 @@ build: $(TARGET)
 
 $(TARGET): $(OBJS) $(LIB)
 	@echo "$(BLUE)$(BOLD)$(UPDATE) bootloader $(TARGET)$(END)"
-	@$(LD) $(LDFLAGS) $@ $^
+	@$(LD) $(LDFLAGS) $^ -o $@
 
 $(LIBREFI): $(SUBDEPENDENCY) 
 	@cd $(LIBREFIPATH) && $(MAKE) $(GENCMD) $(BUILD)
@@ -26,3 +26,7 @@ clean::
 very-clean::
 	@cd $(LIBREFIPATH) && $(MAKE) very-clean
 	@cd $(LIBGPATH) && $(MAKE) very-clean
+
+clean-dep::
+	@cd $(LIBREFIPATH) && $(MAKE) clean-dep
+	@cd $(LIBGPATH) && $(MAKE) clean-dep

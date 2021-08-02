@@ -2,18 +2,21 @@ CC := x86_64-w64-mingw32-gcc
 AS := x86_64-w64-mingw32-as
 LD := x86_64-w64-mingw32-ld
 
+override SHELL=/bin/sh
+
+
 ACTIVEDIR :=$(TOPDIR)/$(subst $(WORKINGDIR)/,,$(CURDIR))
-INCLUDE = -I$(WORKINGDIR)/include/ -I$(CURDIR)/include/ $(LIB_HEADER)
-LIBHEADER =-I$(WORKINGDIR)/lib/glib/
-CFLAGS =-c -ffreestanding -mno-red-zone $(INCLUDE)
+LIBGHEADER =-I$(WORKINGDIR)/lib/include/
+INCLUDE = -I$(WORKINGDIR)/include/ -I$(CURDIR)/include/ $(LIBGHEADER) 
+CFLAGS =-c -ffreestanding -Wall -mno-red-zone $(INCLUDE)
 ASFLAGS =-c    
 LDFLAGS =-nostdlib -T$(LDSCRIPTS) --image-base=0 --gc-sections -dll -shared --subsystem $(SUBSYSTEM) -e $(MODULE_ENTRY)
 LIBFLAGS :=-rcs
 BUILD :=build
 LIBGPATH :=$(WORKINGDIR)/lib/glib
-LIBG :=$(LIBGPATH)/glib.a
+LIBG :=$(LIBGPATH)/libg.a
 LIB =$(LIBG)
-LIBG-SUB-DEPEND-BUILD :=@cd $$(LIBGPATH) && $$(MAKE) $$(GENCMD) $$(BUILD)
+LIBG-SUB-DEPEND-BUILD :=@cd $(LIBGPATH) && $(MAKE) $(GENCMD) $(BUILD)
 
 ifeq ($(GENCMD),gen-dep)
 	SUBDEPENDENCY =sub-gen-dep
@@ -45,7 +48,6 @@ endif
 ifeq ($(CURDIR),$(LIBGPATH))
 	LIBG-SUB-DEPEND-BUILD :=
 endif
-LDFLAGS +=-o
 
 SRC =$(filter-out include*/* lib/*,$(wildcard *.c *.s */*.c */*.s)) #Collect all .c and .s files
 DEPS =$(patsubst %.c,%.d,$(filter %.c,$(SRC)))
@@ -57,12 +59,8 @@ default:
 
 -include $(DEPENDFILE)
 
-#Create a dependency file which contains all the header file dependencies
-gen-dep: $(DEPS)
-	@echo "$(CYAN)$(BOLD)Creating dependency file for $(ACTIVEDIR)$(END)"
-	@touch $^
-	@for dep in $(DEPS); do cat $(dep) >> $(DEPENDFILE) ; done
 
+	
 #Default rule for generating dependency file
 %.d: %.c
 	@echo "$(CYAN)Generating $(BOLD)dependency$(END) $(CYAN)for file $(ACTIVEDIR)/$<$(END)"
@@ -78,13 +76,22 @@ gen-dep: $(DEPS)
 	@echo "$(YELLOW)$(BOLD)Assembling$(END) $(YELLOW)file $(ACTIVEDIR)/$<$(END)"
 	@$(AS) $(ASFLAGS) $< -o $@
 
+#Create a dependency file which contains all the header file dependencies
+.PHONY: gen-dep build-objects
+
+gen-dep: $(DEPS)
+	@echo "$(CYAN)$(BOLD)Creating dependency file for $(ACTIVEDIR)$(END)"
+	@rm -rf $(DEPENDFILE)
+	@touch $(DEPENDFILE)
+	@for dep in $(DEPS); do cat $${dep} >> $(DEPENDFILE) ; done
+
 build-objects: $(OBJS)
 
 #Default rule to build library libg.a(global library for RTOS)
 $(LIBG): $(SUBDEPENDENCY)
 	$(LIBG-SUB-DEPEND-BUILD)	
 
-.PHONY: clean very-clean sub-gen-dep
+.PHONY: clean very-clean sub-gen-dep clean-dep
 clean::
 	@echo "$(RED)$(BOLD)Deleting intermediate files in $(ACTIVEDIR)$(END)"
 	@rm -rf $(OBJS) $(DEPENDFILE) $(DEPS) $(TARGET)
@@ -93,6 +100,6 @@ very-clean:: clean
 	@echo "$(RED)$(BOLD)Deleting $(TARGET)$(END)"
 	@rm -rf $(TARGET) $(RTTARGET)
 
-clean-dep:
-	@echo "$(RED)Removing intermediate dependencies$(END)"
+clean-dep::
+	@echo "$(RED)Removing intermediate dependencies at $(CURDIR)$(END)"
 	@rm -rf $(DEPS)

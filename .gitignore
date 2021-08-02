@@ -4,6 +4,9 @@
 *.a
 *.EFI
 *.o
+*.d
+*.inc
+*.pe
 commit_log
 debug
 tools

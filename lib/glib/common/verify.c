@@ -1,14 +1,13 @@
 #include <rtos/rtypes.h>
 
-boolean verify_function_pointers(void** param_array, size_t number_of_params)
+boolean verify_function_pointers(const void** param_array, size_t number_of_params)
 {
-	size_t** param_ptr = param_array;
 
 	while(number_of_params--)
 	{
-		if(*param_ptr == NULL)
+		if(*param_array == NULL)
 			return false;
-		param_ptr++;
+		param_array++;
 	}
 	return true;
 }

@@ -1,4 +1,4 @@
-#include <io/file.h>
+#include <boot/file.h>
 #include <refilib/refilib.h>
 
 EFI_FILE_PROTOCOL* openfile(EFI_HANDLE device_handle, CHAR16 *file_path)
@@ -21,9 +21,9 @@ EFI_FILE_PROTOCOL* openfile(EFI_HANDLE device_handle, CHAR16 *file_path)
     status = root->Open(root, (EFI_FILE_PROTOCOL**)&file_handle, file_path, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
     if(EFI_ERROR(status))
     {
-        printEFI(L"Fatal error!\r\n");
-        printEFI(L"Could not load requested file at path %s\r\n", file_path);
-        printEFI(L"Cannot continue execution!\r\n");
+        print_efi(L"Fatal error!\r\n");
+        print_efi(L"Could not load requested file at path %s\r\n", file_path);
+        print_efi(L"Cannot continue execution!\r\n");
         while(1){}
     }
 

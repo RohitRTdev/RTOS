@@ -1,5 +1,5 @@
 #include <cpu/cpu.h>
-#include <utils.h>
+#include <kernel/utils.h>
 
 #define FEATURE_GRANULARITY 64
 uint64_t features[10] = {0};

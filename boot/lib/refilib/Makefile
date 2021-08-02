@@ -1,6 +1,6 @@
 include make-def.mk
 
-CFLAGS +=-I../../include/
+INCLUDE += -I../include/
 TARGET =librefi.a
 
 include update-rules.mk

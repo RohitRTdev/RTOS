@@ -1,11 +1,10 @@
 #ifndef _PHY_MEM_H_
 #define _PHY_MEM_H_
 
-#include <kernel.h>
 #include <error/syserror.h>
+#include <rtos/handoff.h>
 
-
-SYS_ERROR phyMem_init(Map_descriptor *MemMap);
+SYS_ERROR phyMem_init(map_descriptor *MemMap);
 SYS_ERROR AllocMem(size_t *size, void **buffer); //AllocMem always gives a PAGESIZE aligned pointer 
 SYS_ERROR FreeMem(void *buffer);
 SYS_ERROR ReAllocMem(size_t *size, void **buffer);

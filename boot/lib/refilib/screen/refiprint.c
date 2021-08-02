@@ -61,7 +61,7 @@ static EFI_STATUS inline print_string(CHAR16 *str)
     return status;
 }
 
-EFI_STATUS printEFI(CHAR16* str, ...)
+EFI_STATUS print_efi(CHAR16* str, ...)
 {
     EFI_STATUS status;
     CHAR16 new_str[100];

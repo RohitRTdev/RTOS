@@ -7,16 +7,15 @@ int64_t rstrcmp(char *str1, char *str2)
     {
         length++;
     }
-    if(str1Length == str2Length)
-        if(length == str1Length)
-            return 0;
+    if(str1Length == str2Length && length == str1Length)
+        return 0;
     else if(str1Length > str2Length && length == str2Length)
         return 1;
     else if(str1Length < str2Length && length == str1Length)
         return -1;
     else if(str1[length] > str2[length])
         return 1;
-    else 
-        return -1;    
+
+    return -1;   
 
 }

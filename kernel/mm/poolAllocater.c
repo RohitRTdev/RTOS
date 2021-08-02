@@ -1,7 +1,7 @@
 #include <mm/phyMem.h>
 #include <mm/phyMemstructs.h>
 #include <mm/phyMemtools.h>
-#include <rclib.h>
+#include <rclib/rclib.h>
 
 /*
    Allocates a pool of resources which can have sizes which 
@@ -12,7 +12,7 @@
 
 SYS_ERROR AllocPool(size_t resc_size, void **buffer, size_t *pool_id)
 {
-    size_t aligned_size = ralign_op(resc_size, 4);
+    size_t aligned_size = ALIGN(resc_size, 4);
     size_t resc_normalised = aligned_size / 4;
     AllocPoolHeader *header = NULL;
     uint32_t *resc_ptr = NULL;
