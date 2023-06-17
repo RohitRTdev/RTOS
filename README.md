@@ -1,3 +1,9 @@
+This project is a brilliant example of my procrastination, and how I invited it by assigning myself a pretty difficult goal. Don't be like me guys.
+Make doable goals for yourself and you will feel like doing it. 
+Thank you and have a nice day.. 
+Rohit. Signing off...
+
+
 # RTOS
 RTOS is X64 based OS that is UEFI compliant.
 
